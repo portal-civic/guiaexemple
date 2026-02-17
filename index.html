@@ -99,22 +99,23 @@
   .s-title { font-family: var(--font-display); font-size: clamp(30px, 4.5vw, 56px); font-weight: 800; line-height: 1.05; letter-spacing: -0.025em; color: var(--text-dark); margin-bottom: 32px; }
 
   /* ── HERO  bg: airy pale blue ── */
-  #hero { background: #eef2ff; flex-direction: column; text-align: center; }
+  #hero { background: #eef2ff; flex-direction: column; align-items: center; text-align: center; }
   .blob { position: absolute; border-radius: 50%; filter: blur(70px); pointer-events: none; }
   .blob-a { width: 480px; height: 480px; background: rgba(108,71,255,0.13); top: -80px; right: -80px; }
   .blob-b { width: 380px; height: 380px; background: rgba(0,184,144,0.12); bottom: -60px; left: -60px; }
   .blob-c { width: 260px; height: 260px; background: rgba(255,61,90,0.07); bottom: 80px; right: 12%; }
   #neural-canvas { position: absolute; inset: 0; z-index: 0; opacity: 0.4; }
-  .hero-inner { position: relative; z-index: 1; padding: 120px 24px 80px; max-width: 900px; }
+  .hero-inner { position: relative; z-index: 1; padding: 120px 48px 80px; max-width: 900px; width: 100%; margin: 0 auto; }
   .hero-tag {
     font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; color: var(--accent2);
     text-transform: uppercase; margin-bottom: 22px; opacity: 0; animation: fadeUp 0.7s 0.2s forwards;
     display: flex; align-items: center; justify-content: center; gap: 10px;
   }
   .hero-tag::before, .hero-tag::after { content: ''; flex: 0 0 26px; height: 1px; background: var(--accent2); opacity: 0.5; }
-  .hero-title { font-family: var(--font-display); font-size: clamp(50px, 11vw, 128px); font-weight: 800; line-height: 0.9; letter-spacing: -0.03em; color: var(--text-dark); opacity: 0; animation: fadeUp 0.8s 0.35s forwards; }
-  .hero-title .hi { color: var(--accent2); display: block; }
-  .hero-title .ha { color: var(--accent1); display: block; }
+  .hero-title { font-family: var(--font-display); font-size: clamp(24px, 5.6vw, 86px); font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; color: var(--text-dark); opacity: 0; animation: fadeUp 0.8s 0.35s forwards; text-align: center; width: 100%; white-space: nowrap; }
+  @media (max-width: 500px) { .hero-title { white-space: normal; font-size: clamp(24px, 8vw, 48px); } }
+  .hero-title .hi { color: var(--accent2); }
+  .hero-title .ha { color: var(--accent1); }
   .hero-desc { font-size: clamp(15px, 2vw, 18px); color: var(--text-soft); max-width: 500px; margin: 22px auto 0; line-height: 1.7; opacity: 0; animation: fadeUp 0.8s 0.5s forwards; }
   .hero-cta { margin-top: 40px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.8s 0.65s forwards; }
   .btn-p { background: var(--accent2); color: #fff; border: none; padding: 13px 26px; font-family: var(--font-display); font-size: 13px; font-weight: 700; border-radius: 6px; cursor: pointer; letter-spacing: 0.07em; text-transform: uppercase; transition: transform 0.15s, box-shadow 0.15s; text-decoration: none; display: inline-block; }
@@ -310,7 +311,7 @@
   <div class="blob blob-c"></div>
   <div class="hero-inner">
     <div class="hero-tag">Guía Interactiva · 2025</div>
-    <h1 class="hero-title"><span class="hi">INTELIGENCIA</span><span class="ha">ARTIFICIAL</span></h1>
+    <h1 class="hero-title"><span class="hi">INTELIGENCIA</span><br><span class="ha">ARTIFICIAL</span></h1>
     <p class="hero-desc">Explora el universo de la IA: desde sus fundamentos hasta el futuro que está moldeando. Visual, interactiva y profunda.</p>
     <div class="hero-cta">
       <a href="#que-es" class="btn-p">Comenzar exploración →</a>
