@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INTELIGENCIA ARTIFICIAL — Guía Interactiva</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --border: rgba(255,255,255,0.07);
+    --text: #f0f0f5;
+    --muted: rgba(240,240,245,0.45);
+    --accent1: #00f5c4;
+    --accent2: #7b5cff;
+    --accent3: #ff4f6d;
+    --accent4: #f5c400;
+    --accent5: #00b8ff;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CURSOR */
+  .cursor {
+    width: 10px; height: 10px;
+    background: var(--accent1);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+    transition: transform 0.1s, background 0.2s;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    width: 38px; height: 38px;
+    border: 1.5px solid var(--accent1);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transition: transform 0.25s ease, opacity 0.2s;
+    opacity: 0.5;
+    mix-blend-mode: difference;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 20px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(10,10,15,0.95), transparent);
+    backdrop-filter: blur(10px);
+  }
+  .nav-logo {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    color: var(--accent1);
+    text-transform: uppercase;
+  }
+  .nav-links {
+    display: flex; gap: 8px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .nav-links a:hover, .nav-links a.active {
+    color: var(--text);
+    border-color: var(--border);
+    background: rgba(255,255,255,0.05);
+  }
+  .nav-progress {
+    width: 40px; height: 40px;
+    position: relative;
+  }
+  .nav-progress svg { transform: rotate(-90deg); }
+  .progress-ring {
+    stroke: var(--accent1);
+    stroke-width: 2;
+    fill: none;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    transition: stroke-dashoffset 0.3s;
+    stroke-linecap: round;
+  }
+
+  /* SECTIONS */
+  section {
+    min-height: 100vh;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+
+  /* HERO */
+  #hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 120px 48px 80px;
+  }
+  .hero-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent1);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(60px, 10vw, 140px);
+    font-weight: 800;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.4s forwards;
+  }
+  .hero-title .line-teal { color: var(--accent1); }
+  .hero-title .line-purple { color: var(--accent2); }
+  .hero-desc {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 540px;
+    margin: 28px auto 0;
+    line-height: 1.65;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.6s forwards;
+  }
+  .hero-cta {
+    margin-top: 48px;
+    display: flex; gap: 16px; justify-content: center;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.8s forwards;
+  }
+  .btn-primary {
+    background: var(--accent1);
+    color: var(--bg);
+    border: none;
+    padding: 14px 30px;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 4px;
+    cursor: none;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: transform 0.15s, box-shadow 0.15s;
+    text-decoration: none;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,245,196,0.35);
+  }
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 14px 30px;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: none;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+  .btn-outline:hover {
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+
+  /* Neural network canvas */
+  #neural-canvas {
+    position: absolute; inset: 0;
+    z-index: 0;
+    opacity: 0.25;
+  }
+  .hero-content { position: relative; z-index: 1; }
+
+  /* SCROLL INDICATOR */
+  .scroll-hint {
+    position: absolute; bottom: 40px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    opacity: 0;
+    animation: fadeIn 1s 1.5s forwards;
+  }
+  .scroll-hint span {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .scroll-line {
+    width: 1px; height: 50px;
+    background: linear-gradient(to bottom, var(--accent1), transparent);
+    animation: scrollPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(0.7); transform-origin: top; }
+    50% { opacity: 1; transform: scaleY(1); transform-origin: top; }
+  }
+
+  /* SECTION HEADER */
+  .section-header {
+    margin-bottom: 60px;
+  }
+  .section-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-tag::before {
+    content: '';
+    width: 28px; height: 2px;
+    background: currentColor;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  /* WHAT IS AI */
+  #que-es {
+    padding: 120px 48px;
+  }
+  .que-es-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    max-width: 1100px;
+    align-items: center;
+  }
+  .que-es-text p {
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.75;
+    margin-bottom: 20px;
+  }
+  .que-es-text p strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+  .timeline {
+    position: relative;
+    padding-left: 24px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute; left: 0; top: 8px; bottom: 8px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent1), var(--accent2), var(--accent3));
+  }
+  .timeline-item {
+    position: relative;
+    padding: 0 0 32px 28px;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all 0.5s;
+  }
+  .timeline-item.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute; left: -5px; top: 6px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent1);
+  }
+  .timeline-item:nth-child(2)::before { border-color: var(--accent2); }
+  .timeline-item:nth-child(3)::before { border-color: var(--accent3); }
+  .timeline-item:nth-child(4)::before { border-color: var(--accent4); }
+  .tl-year {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent1);
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .tl-title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .tl-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* TIPOS DE IA */
+  #tipos {
+    padding: 120px 48px;
+    background: linear-gradient(180deg, var(--bg) 0%, var(--surface) 100%);
+  }
+  .tipos-container { max-width: 1100px; width: 100%; }
+  .tipos-tabs {
+    display: flex; gap: 4px;
+    margin-bottom: 48px;
+    background: rgba(255,255,255,0.04);
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    width: fit-content;
+  }
+  .tipo-tab {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    border-radius: 5px;
+    cursor: none;
+    transition: all 0.2s;
+  }
+  .tipo-tab.active, .tipo-tab:hover {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .tipo-tab.active { color: var(--accent1); }
+  .tipos-panels { position: relative; min-height: 380px; }
+  .tipo-panel {
+    display: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .tipo-panel.active { display: grid; animation: panelIn 0.4s ease; }
+  @keyframes panelIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .tipo-info h3 {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+  .tipo-info p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+  .tipo-tags {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .tipo-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 3px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .tipo-visual {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 40px;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 280px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* AI CHART */
+  #aplicaciones {
+    padding: 120px 48px;
+  }
+  .apps-container { max-width: 1100px; width: 100%; }
+  .apps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 48px;
+  }
+  .app-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    cursor: none;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .app-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, currentColor, transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .app-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,255,255,0.15);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+  .app-card:hover::before { opacity: 0.04; }
+  .app-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .app-card h4 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .app-card p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .app-stat {
+    margin-top: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stat-bar {
+    flex: 1;
+    height: 3px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .stat-fill {
+    height: 100%;
+    border-radius: 2px;
+    width: 0;
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* HOW IT WORKS */
+  #como-funciona {
+    padding: 120px 48px;
+    background: var(--surface);
+  }
+  .flow-container { max-width: 1000px; width: 100%; }
+  .flow-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 60px;
+  }
+  .flow-step {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 32px;
+    padding: 32px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: none;
+    transition: all 0.2s;
+    opacity: 0.5;
+  }
+  .flow-step:hover, .flow-step.active {
+    opacity: 1;
+  }
+  .flow-step.active .flow-num { color: var(--accent1); }
+  .flow-num {
+    font-family: var(--font-display);
+    font-size: 52px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.12);
+    line-height: 1;
+    transition: color 0.2s;
+    align-self: center;
+  }
+  .flow-content h3 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .flow-content p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.65;
+    max-width: 600px;
+  }
+  .flow-visual-area {
+    margin-top: 60px;
+    background: rgba(0,245,196,0.04);
+    border: 1px solid rgba(0,245,196,0.12);
+    border-radius: 16px;
+    padding: 40px;
+    min-height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.4s;
+  }
+
+  /* ÉTICA Y FUTURO */
+  #etica {
+    padding: 120px 48px;
+  }
+  .etica-container { max-width: 1100px; width: 100%; }
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 48px;
+  }
+  .pillar {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 22px;
+    cursor: none;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .pillar:hover {
+    transform: translateY(-4px);
+  }
+  .pillar-accent {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .pillar-icon { font-size: 28px; margin-bottom: 14px; }
+  .pillar h4 {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .pillar p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* STATS SECTION */
+  #stats {
+    padding: 80px 48px;
+    background: linear-gradient(135deg, rgba(123,92,255,0.08) 0%, rgba(0,245,196,0.06) 100%);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    max-width: 1100px;
+    text-align: center;
+  }
+  .stat-item { opacity: 0; transform: translateY(20px); transition: all 0.6s; }
+  .stat-item.visible { opacity: 1; transform: translateY(0); }
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--accent1), var(--accent5));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-label-main {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  /* RADAR CHART */
+  .radar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    margin-top: 48px;
+  }
+  .radar-canvas-wrap { flex-shrink: 0; }
+  .radar-legend { flex: 1; }
+  .radar-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: none;
+    transition: all 0.2s;
+  }
+  .radar-item:hover { padding-left: 8px; }
+  .radar-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .radar-item-label {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    flex: 1;
+  }
+  .radar-item-value {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .radar-bar {
+    width: 80px; height: 3px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .radar-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    width: 0;
+    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* FOOTER / CTA */
+  #final {
+    padding: 120px 48px;
+    text-align: center;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+  }
+  .final-glow {
+    position: absolute;
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse, rgba(123,92,255,0.2) 0%, transparent 70%);
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .final-content { position: relative; z-index: 1; }
+  .final-title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 6vw, 80px);
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 20px;
+  }
+  .final-sub {
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 480px;
+    margin: 0 auto 40px;
+    line-height: 1.65;
+  }
+  .topics-cloud {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+    max-width: 700px; margin: 0 auto 60px;
+  }
+  .topic-chip {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 7px 16px;
+    border-radius: 3px;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--muted);
+    transition: all 0.2s;
+    cursor: none;
+  }
+  .topic-chip:hover {
+    color: var(--text);
+    border-color: var(--accent1);
+    background: rgba(0,245,196,0.06);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s, transform 0.7s;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* FLOATING PARTICLES */
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particleFloat linear infinite;
+  }
+  @keyframes particleFloat {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* TYPE ANIMATION */
+  .typed-text { border-right: 2px solid var(--accent1); white-space: pre; }
+
+  /* VISUAL ELEMENTS for tipo panels */
+  .nn-visual { width: 100%; }
+  .brain-ring {
+    width: 80px; height: 80px;
+    border: 3px solid transparent;
+    border-radius: 50%;
+    animation: spin 4s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.08); opacity: 0.7; }
+  }
+
+  .hexagon {
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+
+  /* TOOLTIP */
+  .tooltip {
+    position: fixed;
+    background: rgba(10,10,15,0.95);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.2s;
+    backdrop-filter: blur(10px);
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="tooltip" id="tooltip"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">IA · Guía</div>
+  <ul class="nav-links">
+    <li><a href="#que-es">¿Qué es?</a></li>
+    <li><a href="#tipos">Tipos</a></li>
+    <li><a href="#aplicaciones">Aplicaciones</a></li>
+    <li><a href="#como-funciona">Cómo Funciona</a></li>
+    <li><a href="#etica">Ética</a></li>
+  </ul>
+  <div class="nav-progress">
+    <svg width="40" height="40" viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="15" stroke="rgba(255,255,255,0.08)" stroke-width="2" fill="none"/>
+      <circle class="progress-ring" cx="20" cy="20" r="15" id="progressRing"
+        style="stroke-dasharray: 94.25; stroke-dashoffset: 94.25;"/>
+    </svg>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="neural-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-tag">// Guía interactiva · 2025</div>
+    <h1 class="hero-title">
+      <span class="line-teal">INTELIGENCIA</span><br>
+      <span class="line-purple">ARTIFICIAL</span>
+    </h1>
+    <p class="hero-desc">Explora el universo de la IA: desde sus fundamentos hasta el futuro que está moldeando. Una guía visual, interactiva y profunda.</p>
+    <div class="hero-cta">
+      <a href="#que-es" class="btn-primary">Comenzar Exploración →</a>
+      <a href="#tipos" class="btn-outline">Ver Tipos de IA</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<section id="stats">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-value" data-target="1958">0</div>
+      <div class="stat-label-main">Año del primer<br>programa de IA funcional</div>
+    </div>
+    <div class="stat-item" style="transition-delay:0.1s">
+      <div class="stat-value" data-target="407">0B$</div>
+      <div class="stat-label-main">Mercado global de IA<br>en 2027 (proyectado)</div>
+    </div>
+    <div class="stat-item" style="transition-delay:0.2s">
+      <div class="stat-value" data-target="97">0%</div>
+      <div class="stat-label-main">De las empresas Fortune 500<br>usan IA activamente</div>
+    </div>
+    <div class="stat-item" style="transition-delay:0.3s">
+      <div class="stat-value" data-target="100">0T+</div>
+      <div class="stat-label-main">Parámetros en modelos<br>de lenguaje actuales</div>
+    </div>
+  </div>
+</section>
+
+<!-- QUÉ ES LA IA -->
+<section id="que-es">
+  <div class="que-es-grid reveal">
+    <div class="que-es-text">
+      <div class="section-header">
+        <div class="section-tag" style="color:var(--accent1)">01 — Fundamentos</div>
+        <h2 class="section-title">¿Qué es la<br>Inteligencia<br><span style="color:var(--accent1)">Artificial?</span></h2>
+      </div>
+      <p>La <strong>Inteligencia Artificial</strong> es la capacidad de las máquinas para realizar tareas que, habitualmente, requieren inteligencia humana: aprender, razonar, resolver problemas, percibir el entorno y usar el lenguaje.</p>
+      <p>No es magia ni ciencia ficción. Es matemática, estadística y grandes cantidades de datos trabajando juntos para crear sistemas que <strong>aprenden de la experiencia</strong>.</p>
+      <p>Desde el correo no deseado hasta los coches autónomos, la IA ya forma parte inseparable de nuestra vida cotidiana.</p>
+    </div>
+    <div>
+      <div class="section-tag" style="color:var(--accent4); margin-bottom: 20px; font-family:var(--font-mono); font-size:11px; letter-spacing:0.2em; text-transform:uppercase; display:flex; align-items:center; gap:10px;">
+        <span style="width:28px;height:2px;background:var(--accent4);display:inline-block"></span>
+        Línea de tiempo
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="tl-year" style="color:var(--accent1)">1950</div>
+          <div class="tl-title">Test de Turing</div>
+          <div class="tl-desc">Alan Turing propone la pregunta: "¿pueden las máquinas pensar?" y crea el primer criterio de inteligencia artificial.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-year" style="color:var(--accent2)">1956</div>
+          <div class="tl-title">Nace el término "IA"</div>
+          <div class="tl-desc">John McCarthy acuña el término en la Conferencia de Dartmouth. El sueño de crear mentes artificiales se formaliza.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-year" style="color:var(--accent3)">1997</div>
+          <div class="tl-title">Deep Blue vs Kasparov</div>
+          <div class="tl-desc">Por primera vez, una computadora derrota al campeón mundial de ajedrez. Un hito que sacude al mundo.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-year" style="color:var(--accent4)">2012</div>
+          <div class="tl-title">Revolución del Deep Learning</div>
+          <div class="tl-desc">AlexNet demuestra el poder de las redes neuronales profundas en visión por computadora. Todo cambia.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-year" style="color:var(--accent5)">2022–</div>
+          <div class="tl-title">Era de los LLMs</div>
+          <div class="tl-desc">ChatGPT, Gemini, Claude. Los grandes modelos de lenguaje llevan la IA a cientos de millones de personas.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIPOS DE IA -->
+<section id="tipos">
+  <div class="tipos-container reveal">
+    <div class="section-header">
+      <div class="section-tag" style="color:var(--accent2)">02 — Taxonomía</div>
+      <h2 class="section-title">Tipos de <span style="color:var(--accent2)">IA</span></h2>
+    </div>
+    <div class="tipos-tabs">
+      <button class="tipo-tab active" data-panel="ml">Machine Learning</button>
+      <button class="tipo-tab" data-panel="dl">Deep Learning</button>
+      <button class="tipo-tab" data-panel="nlp">NLP</button>
+      <button class="tipo-tab" data-panel="cv">Visión Computacional</button>
+    </div>
+    <div class="tipos-panels">
+      <!-- ML -->
+      <div class="tipo-panel active" id="panel-ml">
+        <div class="tipo-info">
+          <h3 style="color:var(--accent1)">Machine Learning</h3>
+          <p>Algoritmos que <strong style="color:var(--text)">aprenden de datos</strong> sin ser programados explícitamente. El sistema identifica patrones y mejora con la experiencia.</p>
+          <p>Se divide en tres grandes paradigmas: aprendizaje supervisado, no supervisado y por refuerzo.</p>
+          <div class="tipo-tags">
+            <span class="tipo-tag" style="background:rgba(0,245,196,0.1);color:var(--accent1)">Supervisado</span>
+            <span class="tipo-tag" style="background:rgba(0,245,196,0.08);color:rgba(0,245,196,0.7)">No Supervisado</span>
+            <span class="tipo-tag" style="background:rgba(0,245,196,0.06);color:rgba(0,245,196,0.5)">Reinforcement</span>
+            <span class="tipo-tag" style="background:rgba(255,255,255,0.05);color:var(--muted)">Regresión</span>
+            <span class="tipo-tag" style="background:rgba(255,255,255,0.05);color:var(--muted)">Clasificación</span>
+          </div>
+        </div>
+        <div class="tipo-visual">
+          <canvas id="mlCanvas" width="320" height="240"></canvas>
+        </div>
+      </div>
+      <!-- DL -->
+      <div class="tipo-panel" id="panel-dl">
+        <div class="tipo-info">
+          <h3 style="color:var(--accent2)">Deep Learning</h3>
+          <p>Redes neuronales con <strong style="color:var(--text)">múltiples capas ocultas</strong> que aprenden representaciones jerárquicas de los datos.</p>
+          <p>Inspiradas en la neurología humana, son la base de los avances más impresionantes en IA: imágenes, voz, texto.</p>
+          <div class="tipo-tags">
+            <span class="tipo-tag" style="background:rgba(123,92,255,0.12);color:var(--accent2)">CNNs</span>
+            <span class="tipo-tag" style="background:rgba(123,92,255,0.1);color:rgba(123,92,255,0.8)">RNNs</span>
+            <span class="tipo-tag" style="background:rgba(123,92,255,0.08);color:rgba(123,92,255,0.6)">Transformers</span>
+            <span class="tipo-tag" style="background:rgba(255,255,255,0.05);color:var(--muted)">GANs</span>
+            <span class="tipo-tag" style="background:rgba(255,255,255,0.05);color:var(--muted)">Autoencoders</span>
+          </div>
+        </div>
+        <div class="tipo-visual">
+          <canvas id="dlCanvas" width="320" height="240"></canvas>
+        </div>
+      </div>
+      <!-- NLP -->
+      <div class="tipo-panel" id="panel-nlp">
+        <div class="tipo-info">
+          <h3 style="color:var(--accent3)">Procesamiento<br>del Lenguaje Natural</h3>
+          <p>Sistemas que entienden, interpretan y <strong style="color:var(--text)">generan lenguaje humano</strong>. La intersección de lingüística y machine learning.</p>
+          <p>Detrás de chatbots, traductores, correctores ortográficos y los potentes LLMs como GPT o Claude.</p>
+          <div class="tipo-tags">
+            <span class="tipo-tag" style="background:rgba(255,79,109,0.12);color:var(--accent3)">Tokenización</span>
+            <span class="tipo-tag" style="background:rgba(255,79,109,0.1);color:rgba(255,79,109,0.8)">Embeddings</span>
+            <span class="tipo-tag" style="background:rgba(255,79,109,0.08);color:rgba(255,79,109,0.6)">Attention</span>
+            <span class="tipo-tag" style="background:rgba(255,255,255,0.05);color:var(--muted)">Fine-tuning</span>
+          </div>
+        </div>
+        <div class="tipo-visual">
+          <div style="text-align:left;width:100%">
+            <div id="nlpTyped" style="font-family:var(--font-mono);font-size:13px;color:var(--accent3);line-height:1.8"></div>
+          </div>
+        </div>
+      </div>
+      <!-- CV -->
+      <div class="tipo-panel" id="panel-cv">
+        <div class="tipo-info">
+          <h3 style="color:var(--accent4)">Visión<br>Computacional</h3>
+          <p>Algoritmos que permiten a las máquinas <strong style="color:var(--text)">ver e interpretar imágenes</strong> y vídeos como lo haría un ser humano.</p>
+          <p>Diagnóstico médico por imágenes, reconocimiento facial, coches autónomos, control de calidad industrial.</p>
+          <div class="tipo-tags">
+            <span class="tipo-tag" style="background:rgba(245,196,0,0.12);color:var(--accent4)">Detección</span>
+            <span class="tipo-tag" style="background:rgba(245,196,0,0.1);color:rgba(245,196,0,0.8)">Segmentación</span>
+            <span class="tipo-tag" style="background:rgba(245,196,0,0.08);color:rgba(245,196,0,0.6)">Clasificación</span>
+            <span class="tipo-tag" style="background:rgba(255,255,255,0.05);color:var(--muted)">OCR</span>
+          </div>
+        </div>
+        <div class="tipo-visual">
+          <canvas id="cvCanvas" width="320" height="240"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APLICACIONES -->
+<section id="aplicaciones">
+  <div class="apps-container">
+    <div class="section-header reveal">
+      <div class="section-tag" style="color:var(--accent3)">03 — Aplicaciones</div>
+      <h2 class="section-title">La IA en el <span style="color:var(--accent3)">mundo real</span></h2>
+    </div>
+    <div class="apps-grid reveal">
+      <div class="app-card" style="color:var(--accent1)">
+        <div class="app-icon" style="background:rgba(0,245,196,0.1);">🏥</div>
+        <h4>Medicina y Salud</h4>
+        <p>Diagnóstico de enfermedades por imágenes médicas, descubrimiento de fármacos y medicina personalizada.</p>
+        <div class="app-stat">
+          <div class="stat-bar"><div class="stat-fill" style="background:var(--accent1)" data-width="87"></div></div>
+          <div class="stat-label">87% adopción</div>
+        </div>
+      </div>
+      <div class="app-card" style="color:var(--accent2)">
+        <div class="app-icon" style="background:rgba(123,92,255,0.1);">🚗</div>
+        <h4>Transporte Autónomo</h4>
+        <p>Vehículos que perciben su entorno, toman decisiones y navegan sin intervención humana en tiempo real.</p>
+        <div class="app-stat">
+          <div class="stat-bar"><div class="stat-fill" style="background:var(--accent2)" data-width="62"></div></div>
+          <div class="stat-label">62% avance</div>
+        </div>
+      </div>
+      <div class="app-card" style="color:var(--accent3)">
+        <div class="app-icon" style="background:rgba(255,79,109,0.1);">💬</div>
+        <h4>Asistentes Conversacionales</h4>
+        <p>Modelos de lenguaje que mantienen diálogos naturales, generan texto y resuelven tareas complejas.</p>
+        <div class="app-stat">
+          <div class="stat-bar"><div class="stat-fill" style="background:var(--accent3)" data-width="95"></div></div>
+          <div class="stat-label">95% usuario</div>
+        </div>
+      </div>
+      <div class="app-card" style="color:var(--accent4)">
+        <div class="app-icon" style="background:rgba(245,196,0,0.1);">🎨</div>
+        <h4>Arte Generativo</h4>
+        <p>Creación de imágenes, música, vídeos y código a partir de descripciones en lenguaje natural.</p>
+        <div class="app-stat">
+          <div class="stat-bar"><div class="stat-fill" style="background:var(--accent4)" data-width="78"></div></div>
+          <div class="stat-label">78% creativo</div>
+        </div>
+      </div>
+      <div class="app-card" style="color:var(--accent5)">
+        <div class="app-icon" style="background:rgba(0,184,255,0.1);">📈</div>
+        <h4>Finanzas y Trading</h4>
+        <p>Detección de fraudes, predicción de mercados, gestión de riesgos y asesoramiento financiero automatizado.</p>
+        <div class="app-stat">
+          <div class="stat-bar"><div class="stat-fill" style="background:var(--accent5)" data-width="81"></div></div>
+          <div class="stat-label">81% integrado</div>
+        </div>
+      </div>
+      <div class="app-card" style="color:rgba(255,255,255,0.6)">
+        <div class="app-icon" style="background:rgba(255,255,255,0.07);">🔬</div>
+        <h4>Ciencia e Investigación</h4>
+        <p>Predicción de estructuras proteínicas, simulaciones climáticas y aceleración del método científico.</p>
+        <div class="app-stat">
+          <div class="stat-bar"><div class="stat-fill" style="background:rgba(255,255,255,0.4)" data-width="73"></div></div>
+          <div class="stat-label">73% impacto</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CÓMO FUNCIONA -->
+<section id="como-funciona">
+  <div class="flow-container reveal">
+    <div class="section-header">
+      <div class="section-tag" style="color:var(--accent5)">04 — Proceso</div>
+      <h2 class="section-title">¿Cómo <span style="color:var(--accent5)">aprende</span><br>una IA?</h2>
+    </div>
+    <div class="flow-steps" id="flowSteps">
+      <div class="flow-step active" data-step="0">
+        <div class="flow-num">01</div>
+        <div class="flow-content">
+          <h3>Recolección de Datos</h3>
+          <p>Todo empieza con datos: texto, imágenes, audio, números. Cuanto más diversos y representativos, mejor aprenderá el modelo. Los datos son el combustible de la IA.</p>
+        </div>
+      </div>
+      <div class="flow-step" data-step="1">
+        <div class="flow-num">02</div>
+        <div class="flow-content">
+          <h3>Preprocesamiento</h3>
+          <p>Los datos crudos se limpian, normalizan y transforman en formatos que el modelo puede procesar. Se eliminan ruidos, se balancean clases, se generan features relevantes.</p>
+        </div>
+      </div>
+      <div class="flow-step" data-step="2">
+        <div class="flow-num">03</div>
+        <div class="flow-content">
+          <h3>Entrenamiento</h3>
+          <p>El modelo ajusta millones de parámetros (pesos) iterativamente, minimizando el error de sus predicciones mediante el algoritmo de retropropagación y descenso de gradiente.</p>
+        </div>
+      </div>
+      <div class="flow-step" data-step="3">
+        <div class="flow-num">04</div>
+        <div class="flow-content">
+          <h3>Evaluación y Validación</h3>
+          <p>Se mide el desempeño del modelo con datos que nunca ha visto. Métricas como precisión, recall o F1-score determinan si el modelo generaliza bien o hace overfitting.</p>
+        </div>
+      </div>
+      <div class="flow-step" data-step="4">
+        <div class="flow-num">05</div>
+        <div class="flow-content">
+          <h3>Despliegue e Inferencia</h3>
+          <p>El modelo entrenado se integra en aplicaciones reales. Recibe nuevas entradas en tiempo real y genera predicciones que impactan decisiones reales del mundo.</p>
+        </div>
+      </div>
+    </div>
+    <div class="flow-visual-area" id="flowVisual">
+      <div id="flowVizContent" style="text-align:center;width:100%"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ÉTICA -->
+<section id="etica">
+  <div class="etica-container">
+    <div class="section-header reveal">
+      <div class="section-tag" style="color:var(--accent3)">05 — Ética y Futuro</div>
+      <h2 class="section-title">El lado <span style="color:var(--accent3)">humano</span><br>de la IA</h2>
+    </div>
+
+    <!-- Radar -->
+    <div class="radar-wrap reveal">
+      <div class="radar-canvas-wrap">
+        <canvas id="radarChart" width="320" height="320"></canvas>
+      </div>
+      <div class="radar-legend">
+        <div style="font-family:var(--font-display);font-size:14px;color:var(--muted);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.1em">Madurez ética por área</div>
+        <div class="radar-item" data-tooltip="Nivel de explicabilidad de los modelos actuales">
+          <div class="radar-dot" style="background:var(--accent1)"></div>
+          <div class="radar-item-label">Transparencia</div>
+          <div class="radar-bar"><div class="radar-bar-fill" style="background:var(--accent1)" data-width="45"></div></div>
+          <div class="radar-item-value">45%</div>
+        </div>
+        <div class="radar-item" data-tooltip="Representación equitativa en los datos de entrenamiento">
+          <div class="radar-dot" style="background:var(--accent2)"></div>
+          <div class="radar-item-label">Equidad</div>
+          <div class="radar-bar"><div class="radar-bar-fill" style="background:var(--accent2)" data-width="38"></div></div>
+          <div class="radar-item-value">38%</div>
+        </div>
+        <div class="radar-item" data-tooltip="Control y protección de datos personales">
+          <div class="radar-dot" style="background:var(--accent3)"></div>
+          <div class="radar-item-label">Privacidad</div>
+          <div class="radar-bar"><div class="radar-bar-fill" style="background:var(--accent3)" data-width="52"></div></div>
+          <div class="radar-item-value">52%</div>
+        </div>
+        <div class="radar-item" data-tooltip="Marco legal y normativo de la IA a nivel global">
+          <div class="radar-dot" style="background:var(--accent4)"></div>
+          <div class="radar-item-label">Regulación</div>
+          <div class="radar-bar"><div class="radar-bar-fill" style="background:var(--accent4)" data-width="30"></div></div>
+          <div class="radar-item-value">30%</div>
+        </div>
+        <div class="radar-item" data-tooltip="Capacidad de las personas para entender y controlar la IA">
+          <div class="radar-dot" style="background:var(--accent5)"></div>
+          <div class="radar-item-label">Accesibilidad</div>
+          <div class="radar-bar"><div class="radar-bar-fill" style="background:var(--accent5)" data-width="60"></div></div>
+          <div class="radar-item-value">60%</div>
+        </div>
+        <div class="radar-item">
+          <div class="radar-dot" style="background:#ff9f43"></div>
+          <div class="radar-item-label">Seguridad</div>
+          <div class="radar-bar"><div class="radar-bar-fill" style="background:#ff9f43" data-width="41"></div></div>
+          <div class="radar-item-value">41%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pillars reveal" style="margin-top:60px">
+      <div class="pillar">
+        <div class="pillar-accent" style="background:var(--accent1)"></div>
+        <div class="pillar-icon">👁️</div>
+        <h4>Transparencia</h4>
+        <p>Los sistemas de IA deben ser explicables. Las personas afectadas por una decisión algorítmica tienen derecho a entenderla.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-accent" style="background:var(--accent2)"></div>
+        <div class="pillar-icon">⚖️</div>
+        <h4>Justicia</h4>
+        <p>Los modelos no deben perpetuar ni amplificar sesgos. La IA debe funcionar equitativamente para todos los grupos sociales.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-accent" style="background:var(--accent3)"></div>
+        <div class="pillar-icon">🛡️</div>
+        <h4>Privacidad</h4>
+        <p>Los datos personales son un derecho fundamental. La IA debe minimizar su recopilación y usarlos con consentimiento.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-accent" style="background:var(--accent4)"></div>
+        <div class="pillar-icon">🤝</div>
+        <h4>Responsabilidad</h4>
+        <p>Siempre debe haber humanos responsables de las decisiones de sistemas autónomos, especialmente en contextos críticos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section id="final">
+  <div class="final-glow"></div>
+  <div class="final-content">
+    <div class="hero-tag" style="opacity:1;animation:none;color:var(--accent2)">// El futuro es ahora</div>
+    <h2 class="final-title">El viaje<br><span style="color:var(--accent2)">apenas</span><br>comienza</h2>
+    <p class="final-sub">La inteligencia artificial no es el destino. Es el vehículo hacia un mundo donde humanos y máquinas colaboran para resolver los grandes desafíos de la humanidad.</p>
+    <div class="topics-cloud">
+      <span class="topic-chip">AGI</span>
+      <span class="topic-chip">Neuromorphic Computing</span>
+      <span class="topic-chip">Quantum AI</span>
+      <span class="topic-chip">Federated Learning</span>
+      <span class="topic-chip">AI Alignment</span>
+      <span class="topic-chip">Multimodal Models</span>
+      <span class="topic-chip">Edge AI</span>
+      <span class="topic-chip">AI Regulation</span>
+      <span class="topic-chip">Human-AI Collaboration</span>
+      <span class="topic-chip">Neuromorphic Chips</span>
+      <span class="topic-chip">Foundation Models</span>
+      <span class="topic-chip">Explainable AI</span>
+    </div>
+    <div class="hero-cta" style="opacity:1;animation:none;">
+      <a href="#hero" class="btn-primary">↑ Volver al inicio</a>
+    </div>
+  </div>
+</section>
+
+<script>
+// === CURSOR ===
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.transform = `translate(${mx-5}px, ${my-5}px)`;
+});
+function animCursor() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  cursorRing.style.transform = `translate(${rx-19}px, ${ry-19}px)`;
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+
+// === TOOLTIP ===
+const tooltip = document.getElementById('tooltip');
+document.querySelectorAll('[data-tooltip]').forEach(el => {
+  el.addEventListener('mouseenter', e => {
+    tooltip.textContent = el.dataset.tooltip;
+    tooltip.style.opacity = '1';
+  });
+  el.addEventListener('mousemove', e => {
+    tooltip.style.left = (e.clientX + 16) + 'px';
+    tooltip.style.top = (e.clientY - 10) + 'px';
+  });
+  el.addEventListener('mouseleave', () => {
+    tooltip.style.opacity = '0';
+  });
+});
+
+// === PROGRESS RING ===
+const progressRing = document.getElementById('progressRing');
+const C = 2 * Math.PI * 15;
+progressRing.style.strokeDasharray = C;
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+  progressRing.style.strokeDashoffset = C * (1 - scrolled);
+});
+
+// === REVEAL ON SCROLL ===
+const reveals = document.querySelectorAll('.reveal, .timeline-item, .stat-item');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      if (e.target.classList.contains('stat-item')) animateCounter(e.target);
+      if (e.target.closest('#etica')) animateBars();
+      if (e.target.closest('#aplicaciones')) animateStatBars();
+    }
+  });
+}, { threshold: 0.15 });
+reveals.forEach(r => observer.observe(r));
+
+// === COUNTER ANIMATION ===
+function animateCounter(el) {
+  const valueEl = el.querySelector('.stat-value');
+  if (!valueEl || valueEl.dataset.animated) return;
+  valueEl.dataset.animated = true;
+  const target = parseInt(valueEl.dataset.target);
+  const suffix = valueEl.textContent.replace(/\d/g, '');
+  const duration = 1800;
+  const start = performance.now();
+  function update(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    valueEl.textContent = Math.round(ease * target) + suffix;
+    if (t < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+// === BAR ANIMATIONS ===
+function animateStatBars() {
+  document.querySelectorAll('.stat-fill[data-width]').forEach(b => {
+    if (!b.dataset.animated) {
+      b.dataset.animated = true;
+      setTimeout(() => b.style.width = b.dataset.width + '%', 200);
+    }
+  });
+}
+function animateBars() {
+  document.querySelectorAll('.radar-bar-fill[data-width]').forEach(b => {
+    if (!b.dataset.animated) {
+      b.dataset.animated = true;
+      setTimeout(() => b.style.width = b.dataset.width + '%', 200);
+      drawRadar();
+    }
+  });
+}
+
+// === NEURAL CANVAS (Hero) ===
+const nc = document.getElementById('neural-canvas');
+const nctx = nc.getContext('2d');
+nc.width = window.innerWidth; nc.height = window.innerHeight;
+const nodes = Array.from({length: 60}, () => ({
+  x: Math.random() * nc.width, y: Math.random() * nc.height,
+  vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+  r: Math.random() * 2.5 + 1
+}));
+function drawNeural() {
+  nctx.clearRect(0, 0, nc.width, nc.height);
+  nodes.forEach(n => {
+    n.x += n.vx; n.y += n.vy;
+    if (n.x < 0 || n.x > nc.width) n.vx *= -1;
+    if (n.y < 0 || n.y > nc.height) n.vy *= -1;
+  });
+  nodes.forEach((a, i) => {
+    nodes.slice(i + 1).forEach(b => {
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (d < 130) {
+        nctx.beginPath();
+        nctx.strokeStyle = `rgba(0,245,196,${(1 - d/130) * 0.3})`;
+        nctx.lineWidth = 0.5;
+        nctx.moveTo(a.x, a.y); nctx.lineTo(b.x, b.y); nctx.stroke();
+      }
+    });
+    nctx.beginPath();
+    nctx.fillStyle = 'rgba(0,245,196,0.6)';
+    nctx.arc(a.x, a.y, a.r, 0, Math.PI * 2); nctx.fill();
+  });
+  requestAnimationFrame(drawNeural);
+}
+drawNeural();
+window.addEventListener('resize', () => { nc.width = window.innerWidth; nc.height = window.innerHeight; });
+
+// === ML CANVAS ===
+function drawML() {
+  const c = document.getElementById('mlCanvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  // Draw scatter plot with two classes
+  const classA = Array.from({length: 20}, () => ({ x: 60 + Math.random()*100, y: 40 + Math.random()*80 }));
+  const classB = Array.from({length: 20}, () => ({ x: 180 + Math.random()*100, y: 120 + Math.random()*80 }));
+  let angle = 0;
+  function draw() {
+    ctx.clearRect(0,0,320,240);
+    ctx.fillStyle = 'rgba(0,245,196,0.12)';
+    ctx.fillRect(0,0,320,240);
+    // grid
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+    ctx.lineWidth = 1;
+    for(let i=0;i<320;i+=40){ ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,240); ctx.stroke(); }
+    for(let i=0;i<240;i+=40){ ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(320,i); ctx.stroke(); }
+    // decision boundary
+    ctx.beginPath();
+    const x1 = 50, y1 = 200 + Math.sin(angle)*20;
+    const x2 = 270, y2 = 40 + Math.sin(angle+1)*20;
+    ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+    ctx.strokeStyle = 'rgba(0,245,196,0.7)';
+    ctx.lineWidth = 2; ctx.setLineDash([6,4]); ctx.stroke(); ctx.setLineDash([]);
+    // points
+    classA.forEach(p => {
+      ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(0,245,196,0.8)'; ctx.fill();
+    });
+    classB.forEach(p => {
+      ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(123,92,255,0.8)'; ctx.fill();
+    });
+    angle += 0.01;
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function drawDL() {
+  const c = document.getElementById('dlCanvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const layers = [3, 5, 5, 4, 2];
+  const lx = [40, 100, 170, 240, 295];
+  const nodes = layers.map((n, li) =>
+    Array.from({length:n}, (_,ni) => ({
+      x: lx[li], y: 120 - (n-1)*22 + ni*44
+    }))
+  );
+  let t = 0;
+  function draw() {
+    ctx.clearRect(0,0,320,240);
+    // connections
+    for (let li = 0; li < layers.length-1; li++) {
+      nodes[li].forEach(a => nodes[li+1].forEach(b => {
+        const wave = Math.sin(t*0.05 + a.x*0.02 + b.y*0.02);
+        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+        ctx.strokeStyle = `rgba(123,92,255,${0.08 + wave*0.06})`;
+        ctx.lineWidth = 0.8; ctx.stroke();
+      }));
+    }
+    // nodes
+    nodes.forEach((layer, li) => layer.forEach(n => {
+      ctx.beginPath(); ctx.arc(n.x, n.y, 7, 0, Math.PI*2);
+      const grad = ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,7);
+      const a = 0.4 + 0.3*Math.sin(t*0.08 + n.x + n.y);
+      grad.addColorStop(0, `rgba(123,92,255,${a+0.3})`);
+      grad.addColorStop(1, `rgba(123,92,255,${a*0.2})`);
+      ctx.fillStyle = grad; ctx.fill();
+    }));
+    t++;
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function drawCV() {
+  const c = document.getElementById('cvCanvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0,0,320,240);
+    ctx.fillStyle = 'rgba(245,196,0,0.04)'; ctx.fillRect(0,0,320,240);
+    // Fake image grid
+    const cols = 5, rows = 4, cw = 320/cols, rh = 240/rows;
+    for(let r=0;r<rows;r++) for(let c2=0;c2<cols;c2++) {
+      const x = c2*cw+4, y = r*rh+4, w = cw-8, h = rh-8;
+      const hue = (c2*60 + r*40 + frame*0.5) % 360;
+      ctx.fillStyle = `hsla(${hue},40%,30%,0.5)`;
+      ctx.fillRect(x,y,w,h);
+    }
+    // Scanning rectangle
+    const scanX = ((frame*2) % 320);
+    ctx.strokeStyle = 'rgba(245,196,0,0.8)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(scanX - 30, 40, 60, 60);
+    // Label
+    ctx.fillStyle = 'rgba(245,196,0,0.9)';
+    ctx.font = '11px JetBrains Mono, monospace';
+    ctx.fillText('objeto: 94.2%', scanX - 24, 115);
+    // Corner brackets
+    [[scanX-30,40],[scanX+30,40],[scanX-30,100],[scanX+30,100]].forEach(([bx,by],i) => {
+      ctx.beginPath(); ctx.strokeStyle = 'rgba(245,196,0,1)'; ctx.lineWidth = 2;
+      const dx = i%2===0 ? 8 : -8, dy = i<2 ? 8 : -8;
+      ctx.moveTo(bx+dx,by); ctx.lineTo(bx,by); ctx.lineTo(bx,by+dy); ctx.stroke();
+    });
+    frame++;
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// === TIPOS TABS ===
+document.querySelectorAll('.tipo-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tipo-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tipo-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    const panelId = 'panel-' + tab.dataset.panel;
+    document.getElementById(panelId).classList.add('active');
+    if (tab.dataset.panel === 'ml') drawML();
+    if (tab.dataset.panel === 'dl') drawDL();
+    if (tab.dataset.panel === 'cv') drawCV();
+    if (tab.dataset.panel === 'nlp') startNLPTyping();
+  });
+});
+// Init first
+setTimeout(drawML, 200);
+
+// === NLP TYPING ===
+let nlpTypingInterval;
+function startNLPTyping() {
+  const el = document.getElementById('nlpTyped');
+  if (!el) return;
+  clearInterval(nlpTypingInterval);
+  const lines = [
+    '> Input: "¿Cuál es la capital de Francia?"',
+    '> Tokenización: ["¿", "Cuál", "es", "la", ...]',
+    '> Embeddings: [0.23, -0.91, 0.44, ...]',
+    '> Attention: foco → "capital", "Francia"',
+    '> Output: "La capital de Francia es París."',
+    '',
+    '> Confianza: 99.8% ✓'
+  ];
+  let lineIdx = 0, charIdx = 0;
+  el.innerHTML = '';
+  nlpTypingInterval = setInterval(() => {
+    if (lineIdx >= lines.length) { clearInterval(nlpTypingInterval); return; }
+    if (charIdx < lines[lineIdx].length) {
+      el.innerHTML = lines.slice(0, lineIdx).join('<br>') + '<br>' + lines[lineIdx].substring(0, charIdx+1) + '<span style="border-right:2px solid var(--accent3);margin-left:1px">&nbsp;</span>';
+      charIdx++;
+    } else {
+      lineIdx++; charIdx = 0;
+    }
+  }, 30);
+}
+
+// === FLOW STEPS ===
+const flowSteps = document.querySelectorAll('.flow-step');
+const flowViz = document.getElementById('flowVizContent');
+const flowVisuals = [
+  { label: 'Recolección', html: `<div style="display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap">
+    ${['📷 Imágenes','📝 Texto','🎵 Audio','📊 Datos','🌐 Web'].map(s => `<div style="background:rgba(0,245,196,0.08);border:1px solid rgba(0,245,196,0.2);border-radius:6px;padding:10px 16px;font-family:var(--font-mono);font-size:12px;color:var(--accent1)">${s}</div>`).join('')}
+    </div>`, border: 'rgba(0,245,196,0.15)' },
+  { label: 'Preprocesamiento', html: `<div style="font-family:var(--font-mono);font-size:13px;color:var(--accent5);text-align:left;max-width:500px">
+    <div style="color:var(--muted);margin-bottom:8px">// Pipeline de transformación</div>
+    <div style="color:var(--accent1)">datos_raw</div>
+    <div style="padding-left:20px;color:var(--muted)">→ <span style="color:var(--text)">clean()</span> → <span style="color:var(--text)">normalize()</span></div>
+    <div style="padding-left:40px;color:var(--muted)">→ <span style="color:var(--text)">tokenize()</span> → <span style="color:var(--text)">encode()</span></div>
+    <div style="padding-left:60px;color:var(--accent2)">→ dataset listo ✓</div>
+    </div>`, border: 'rgba(0,184,255,0.15)' },
+  { label: 'Entrenamiento', html: `<div style="width:100%;max-width:400px">
+    <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-bottom:8px"><span>Epoch 1/100</span><span>Loss: 2.847</span></div>
+    <div style="height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;margin-bottom:16px"><div style="height:100%;width:1%;background:linear-gradient(90deg,var(--accent2),var(--accent1));border-radius:3px;animation:trainBar 3s ease forwards" id="trainBar"></div></div>
+    <div id="lossLog" style="font-family:var(--font-mono);font-size:11px;color:var(--muted);height:80px;overflow:hidden"></div>
+    </div>`, border: 'rgba(123,92,255,0.15)' },
+  { label: 'Evaluación', html: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:360px">
+    ${[['Precisión','94.3%','var(--accent1)'],['Recall','91.8%','var(--accent2)'],['F1-Score','93.0%','var(--accent5)'],['AUC-ROC','0.978','var(--accent4)']].map(([l,v,c]) => `<div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center"><div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:${c}">${v}</div><div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:4px">${l}</div></div>`).join('')}
+    </div>`, border: 'rgba(245,196,0,0.15)' },
+  { label: 'Despliegue', html: `<div style="font-family:var(--font-mono);font-size:12px;text-align:left;max-width:420px">
+    <div style="color:var(--accent1);margin-bottom:8px">POST /api/v1/predict</div>
+    <div style="background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:6px;padding:14px;color:var(--muted);line-height:1.8">
+    <span style="color:var(--accent5)">{</span><br>
+    &nbsp;&nbsp;<span style="color:var(--accent3)">"input"</span>: <span style="color:var(--text)">"nueva consulta"</span>,<br>
+    &nbsp;&nbsp;<span style="color:var(--accent3)">"prediction"</span>: <span style="color:var(--accent1)">"resultado"</span>,<br>
+    &nbsp;&nbsp;<span style="color:var(--accent3)">"confidence"</span>: <span style="color:var(--accent2)">0.943</span>,<br>
+    &nbsp;&nbsp;<span style="color:var(--accent3)">"latency"</span>: <span style="color:var(--accent4)">"12ms"</span><br>
+    <span style="color:var(--accent5)">}</span>
+    </div></div>`, border: 'rgba(255,79,109,0.15)' }
+];
+
+flowSteps.forEach((step, i) => {
+  step.addEventListener('click', () => {
+    flowSteps.forEach(s => s.classList.remove('active'));
+    step.classList.add('active');
+    const v = flowVisuals[i];
+    const fa = document.getElementById('flowVisual');
+    fa.style.borderColor = v.border;
+    flowViz.innerHTML = v.html;
+    if (i === 2) {
+      // Animate train bar and loss log
+      const bar = document.getElementById('trainBar');
+      const log = document.getElementById('lossLog');
+      if (bar) {
+        let pct = 1, ep = 1, loss = 2.847;
+        const trainInt = setInterval(() => {
+          pct += 1.5; ep = Math.round(pct); loss = Math.max(0.12, loss * 0.95);
+          if (bar) bar.style.width = Math.min(100,pct) + '%';
+          if (log) log.innerHTML = (log.innerHTML || '') + `<div style="color:var(--accent1)">Ep ${ep}: loss=${loss.toFixed(3)}</div>`;
+          if (log) log.scrollTop = log.scrollHeight;
+          if (pct >= 100) clearInterval(trainInt);
+        }, 120);
+      }
+    }
+  });
+});
+// Init first step
+flowViz.innerHTML = flowVisuals[0].html;
+
+// === RADAR CHART ===
+function drawRadar() {
+  const c = document.getElementById('radarChart');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const cx = 160, cy = 160, r = 130;
+  const labels = ['Transparencia','Equidad','Privacidad','Regulación','Accesibilidad','Seguridad'];
+  const values = [0.45, 0.38, 0.52, 0.30, 0.60, 0.41];
+  const colors = ['var(--accent1)','var(--accent2)','var(--accent3)','var(--accent4)','var(--accent5)','#ff9f43'];
+  const n = labels.length;
+  let anim = 0;
+  function draw() {
+    ctx.clearRect(0,0,320,320);
+    const t = Math.min(anim / 60, 1);
+    const ease = 1 - Math.pow(1-t, 3);
+    // Web
+    for (let ring = 1; ring <= 5; ring++) {
+      ctx.beginPath();
+      for (let i = 0; i < n; i++) {
+        const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+        const x = cx + (r * ring/5) * Math.cos(angle);
+        const y = cy + (r * ring/5) * Math.sin(angle);
+        i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+      ctx.lineWidth = 1; ctx.stroke();
+    }
+    // Axes
+    for (let i = 0; i < n; i++) {
+      const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1; ctx.stroke();
+    }
+    // Data
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+      const rv = r * values[i] * ease;
+      const x = cx + rv * Math.cos(angle), y = cy + rv * Math.sin(angle);
+      i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(0,245,196,0.12)'; ctx.fill();
+    ctx.strokeStyle = 'rgba(0,245,196,0.6)'; ctx.lineWidth = 2; ctx.stroke();
+    // Points
+    for (let i = 0; i < n; i++) {
+      const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+      const rv = r * values[i] * ease;
+      const x = cx + rv * Math.cos(angle), y = cy + rv * Math.sin(angle);
+      ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2);
+      ctx.fillStyle = colors[i]; ctx.fill();
+    }
+    // Labels
+    ctx.font = '11px "DM Sans", sans-serif';
+    for (let i = 0; i < n; i++) {
+      const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+      const lx = cx + (r+20) * Math.cos(angle), ly = cy + (r+20) * Math.sin(angle);
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.textAlign = Math.abs(lx-cx) < 5 ? 'center' : lx > cx ? 'left' : 'right';
+      ctx.textBaseline = Math.abs(ly-cy) < 5 ? 'middle' : ly > cy ? 'top' : 'bottom';
+      ctx.fillText(labels[i], lx, ly);
+    }
+    if (t < 1) { anim++; requestAnimationFrame(draw); }
+  }
+  draw();
+}
+
+// Observe etica section
+const eticaObs = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) {
+    drawRadar();
+    animateBars();
+    eticaObs.disconnect();
+  }
+}, { threshold: 0.2 });
+const eticaSection = document.getElementById('etica');
+if (eticaSection) eticaObs.observe(eticaSection);
+
+// Observe aplicaciones
+const appObs = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) {
+    animateStatBars();
+    appObs.disconnect();
+  }
+}, { threshold: 0.2 });
+const appSection = document.getElementById('aplicaciones');
+if (appSection) appObs.observe(appSection);
+
+// === STYLE for trainBar ===
+const style = document.createElement('style');
+style.textContent = `@keyframes trainBar { from { width: 0% } to { width: 100% } }`;
+document.head.appendChild(style);
+
+// === NAV ACTIVE LINKS ===
+const sections = ['hero','que-es','tipos','aplicaciones','como-funciona','etica'];
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  const y = window.scrollY + 200;
+  sections.forEach((id, i) => {
+    const s = document.getElementById(id);
+    if (s && y >= s.offsetTop && (i === sections.length-1 || y < document.getElementById(sections[i+1])?.offsetTop)) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      navLinks[i-1]?.classList.add('active');
+    }
+  });
+});
+
+// === PARTICLES ===
+function createParticles() {
+  const hero = document.getElementById('hero');
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 3 + 1;
+    const colors = ['var(--accent1)','var(--accent2)','var(--accent3)'];
+    p.style.cssText = `
+      width:${size}px;height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${Math.random()*100}%;
+      bottom:${-10}px;
+      animation-duration:${8 + Math.random()*12}s;
+      animation-delay:${Math.random()*8}s;
+      opacity:0.4;
+    `;
+    hero.appendChild(p);
+  }
+}
+createParticles();
+</script>
+</body>
+</html>
