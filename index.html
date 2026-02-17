@@ -7,788 +7,267 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0f;
-    --surface: #111118;
-    --border: rgba(255,255,255,0.07);
-    --text: #f0f0f5;
-    --muted: rgba(240,240,245,0.45);
-    --accent1: #00f5c4;
-    --accent2: #7b5cff;
-    --accent3: #ff4f6d;
-    --accent4: #f5c400;
-    --accent5: #00b8ff;
+    --accent1: #00b890;
+    --accent2: #6c47ff;
+    --accent3: #ff3d5a;
+    --accent4: #d4920a;
+    --accent5: #0088d4;
     --font-display: 'Syne', sans-serif;
     --font-body: 'DM Sans', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
+    --text-dark: #0f172a;
+    --text-mid: #334155;
+    --text-soft: #64748b;
+    --border: rgba(0,0,0,0.09);
+    --card: rgba(255,255,255,0.8);
+    --shadow: 0 4px 20px rgba(0,0,0,0.07);
+    --shadow-hover: 0 14px 40px rgba(0,0,0,0.12);
   }
 
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
   html { scroll-behavior: smooth; }
+  body { font-family: var(--font-body); overflow-x: hidden; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    overflow-x: hidden;
-    cursor: none;
+  /* ── CURSOR (desktop) ── */
+  .cursor, .cursor-ring { display: none; pointer-events: none; }
+  @media (pointer: fine) {
+    body { cursor: none; }
+    .cursor {
+      width: 10px; height: 10px; background: var(--accent2);
+      border-radius: 50%; position: fixed; top: 0; left: 0; z-index: 9999;
+      mix-blend-mode: multiply; display: block;
+    }
+    .cursor-ring {
+      width: 34px; height: 34px; border: 2px solid var(--accent2); opacity: 0.35;
+      border-radius: 50%; position: fixed; top: 0; left: 0; z-index: 9998; display: block;
+    }
+  }
+  .tooltip {
+    position: fixed; background: rgba(15,23,42,0.9); border-radius: 6px;
+    padding: 6px 12px; font-family: var(--font-mono); font-size: 11px; color: #fff;
+    pointer-events: none; z-index: 1500; opacity: 0; transition: opacity 0.2s;
+    max-width: 200px; line-height: 1.5;
   }
 
-  /* CURSOR */
-  .cursor {
-    width: 10px; height: 10px;
-    background: var(--accent1);
-    border-radius: 50%;
-    position: fixed; top: 0; left: 0;
-    pointer-events: none; z-index: 9999;
-    transition: transform 0.1s, background 0.2s;
-    mix-blend-mode: difference;
-  }
-  .cursor-ring {
-    width: 38px; height: 38px;
-    border: 1.5px solid var(--accent1);
-    border-radius: 50%;
-    position: fixed; top: 0; left: 0;
-    pointer-events: none; z-index: 9998;
-    transition: transform 0.25s ease, opacity 0.2s;
-    opacity: 0.5;
-    mix-blend-mode: difference;
-  }
-
-  /* NAV */
+  /* ── NAV ── */
   nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    padding: 20px 48px;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+    padding: 14px 44px;
     display: flex; align-items: center; justify-content: space-between;
-    background: linear-gradient(to bottom, rgba(10,10,15,0.95), transparent);
-    backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
   }
-  .nav-logo {
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: 15px;
-    letter-spacing: 0.12em;
-    color: var(--accent1);
-    text-transform: uppercase;
-  }
-  .nav-links {
-    display: flex; gap: 8px;
-    list-style: none;
-  }
+  .nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent2); }
+  .nav-links { display: flex; gap: 4px; list-style: none; }
   .nav-links a {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--muted);
-    text-decoration: none;
-    padding: 6px 14px;
-    border-radius: 20px;
-    border: 1px solid transparent;
-    transition: all 0.2s;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    font-family: var(--font-mono); font-size: 11px; color: var(--text-soft);
+    text-decoration: none; padding: 6px 12px; border-radius: 20px;
+    border: 1px solid transparent; transition: all 0.18s;
+    text-transform: uppercase; letter-spacing: 0.07em;
   }
-  .nav-links a:hover, .nav-links a.active {
-    color: var(--text);
-    border-color: var(--border);
-    background: rgba(255,255,255,0.05);
+  .nav-links a:hover, .nav-links a.active { color: var(--accent2); border-color: rgba(108,71,255,0.2); background: rgba(108,71,255,0.06); }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  .nav-progress-svg { transform: rotate(-90deg); }
+  .pr-track { fill: none; stroke: rgba(108,71,255,0.12); stroke-width: 2; }
+  .pr-fill { fill: none; stroke: var(--accent2); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 88; stroke-dashoffset: 88; transition: stroke-dashoffset 0.3s; }
+  .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 4px; flex-direction: column; gap: 5px; }
+  .hamburger span { display: block; width: 22px; height: 2px; background: var(--text-dark); border-radius: 2px; transition: all 0.25s; }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .nav-drawer {
+    display: none; position: fixed; top: 57px; left: 0; right: 0; z-index: 490;
+    background: rgba(255,255,255,0.97); backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column; padding: 12px 20px 18px;
   }
-  .nav-progress {
-    width: 40px; height: 40px;
-    position: relative;
-  }
-  .nav-progress svg { transform: rotate(-90deg); }
-  .progress-ring {
-    stroke: var(--accent1);
-    stroke-width: 2;
-    fill: none;
-    stroke-dasharray: 100;
-    stroke-dashoffset: 100;
-    transition: stroke-dashoffset 0.3s;
-    stroke-linecap: round;
-  }
+  .nav-drawer.open { display: flex; }
+  .nav-drawer a { font-family: var(--font-mono); font-size: 13px; color: var(--text-mid); text-decoration: none; padding: 11px 14px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.06em; transition: all 0.15s; }
+  .nav-drawer a:hover { background: rgba(108,71,255,0.06); color: var(--accent2); }
 
-  /* SECTIONS */
-  section {
-    min-height: 100vh;
-    position: relative;
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden;
-  }
+  /* ── SECTIONS ── */
+  section { min-height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .wrap { max-width: 1100px; width: 100%; padding: 110px 48px 80px; }
 
-  /* HERO */
-  #hero {
-    flex-direction: column;
-    text-align: center;
-    padding: 120px 48px 80px;
-  }
-  .hero-tag {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    color: var(--accent1);
-    text-transform: uppercase;
-    margin-bottom: 28px;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.2s forwards;
-  }
-  .hero-title {
-    font-family: var(--font-display);
-    font-size: clamp(60px, 10vw, 140px);
-    font-weight: 800;
-    line-height: 0.92;
-    letter-spacing: -0.02em;
-    opacity: 0;
-    animation: fadeUp 0.9s 0.4s forwards;
-  }
-  .hero-title .line-teal { color: var(--accent1); }
-  .hero-title .line-purple { color: var(--accent2); }
-  .hero-desc {
-    font-size: 18px;
-    color: var(--muted);
-    max-width: 540px;
-    margin: 28px auto 0;
-    line-height: 1.65;
-    opacity: 0;
-    animation: fadeUp 0.9s 0.6s forwards;
-  }
-  .hero-cta {
-    margin-top: 48px;
-    display: flex; gap: 16px; justify-content: center;
-    opacity: 0;
-    animation: fadeUp 0.9s 0.8s forwards;
-  }
-  .btn-primary {
-    background: var(--accent1);
-    color: var(--bg);
-    border: none;
-    padding: 14px 30px;
-    font-family: var(--font-display);
-    font-size: 14px;
-    font-weight: 700;
-    border-radius: 4px;
-    cursor: none;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    transition: transform 0.15s, box-shadow 0.15s;
-    text-decoration: none;
-  }
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0,245,196,0.35);
-  }
-  .btn-outline {
-    background: transparent;
-    color: var(--text);
-    border: 1px solid var(--border);
-    padding: 14px 30px;
-    font-family: var(--font-display);
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: 4px;
-    cursor: none;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    transition: all 0.15s;
-    text-decoration: none;
-  }
-  .btn-outline:hover {
-    border-color: var(--accent2);
-    color: var(--accent2);
-  }
-
-  /* Neural network canvas */
-  #neural-canvas {
-    position: absolute; inset: 0;
-    z-index: 0;
-    opacity: 0.25;
-  }
-  .hero-content { position: relative; z-index: 1; }
-
-  /* SCROLL INDICATOR */
-  .scroll-hint {
-    position: absolute; bottom: 40px;
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
-    opacity: 0;
-    animation: fadeIn 1s 1.5s forwards;
-  }
-  .scroll-hint span {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-  }
-  .scroll-line {
-    width: 1px; height: 50px;
-    background: linear-gradient(to bottom, var(--accent1), transparent);
-    animation: scrollPulse 1.8s ease-in-out infinite;
-  }
-  @keyframes scrollPulse {
-    0%, 100% { opacity: 0.3; transform: scaleY(0.7); transform-origin: top; }
-    50% { opacity: 1; transform: scaleY(1); transform-origin: top; }
-  }
-
-  /* SECTION HEADER */
-  .section-header {
-    margin-bottom: 60px;
-  }
-  .section-tag {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    margin-bottom: 14px;
+  /* ── COMMON TYPOGRAPHY ── */
+  .s-tag {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em;
+    text-transform: uppercase; margin-bottom: 14px;
     display: flex; align-items: center; gap: 10px;
   }
-  .section-tag::before {
-    content: '';
-    width: 28px; height: 2px;
-    background: currentColor;
-  }
-  .section-title {
-    font-family: var(--font-display);
-    font-size: clamp(36px, 5vw, 64px);
-    font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-  }
+  .s-tag::before { content: ''; width: 22px; height: 2px; background: currentColor; flex-shrink: 0; }
+  .s-title { font-family: var(--font-display); font-size: clamp(30px, 4.5vw, 56px); font-weight: 800; line-height: 1.05; letter-spacing: -0.025em; color: var(--text-dark); margin-bottom: 32px; }
 
-  /* WHAT IS AI */
-  #que-es {
-    padding: 120px 48px;
+  /* ── HERO  bg: airy pale blue ── */
+  #hero { background: #eef2ff; flex-direction: column; text-align: center; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(70px); pointer-events: none; }
+  .blob-a { width: 480px; height: 480px; background: rgba(108,71,255,0.13); top: -80px; right: -80px; }
+  .blob-b { width: 380px; height: 380px; background: rgba(0,184,144,0.12); bottom: -60px; left: -60px; }
+  .blob-c { width: 260px; height: 260px; background: rgba(255,61,90,0.07); bottom: 80px; right: 12%; }
+  #neural-canvas { position: absolute; inset: 0; z-index: 0; opacity: 0.4; }
+  .hero-inner { position: relative; z-index: 1; padding: 120px 24px 80px; max-width: 900px; }
+  .hero-tag {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; color: var(--accent2);
+    text-transform: uppercase; margin-bottom: 22px; opacity: 0; animation: fadeUp 0.7s 0.2s forwards;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
   }
-  .que-es-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 80px;
-    max-width: 1100px;
-    align-items: center;
-  }
-  .que-es-text p {
-    color: var(--muted);
-    font-size: 16px;
-    line-height: 1.75;
-    margin-bottom: 20px;
-  }
-  .que-es-text p strong {
-    color: var(--text);
-    font-weight: 500;
-  }
-  .timeline {
-    position: relative;
-    padding-left: 24px;
-  }
-  .timeline::before {
-    content: '';
-    position: absolute; left: 0; top: 8px; bottom: 8px;
-    width: 2px;
-    background: linear-gradient(to bottom, var(--accent1), var(--accent2), var(--accent3));
-  }
-  .timeline-item {
-    position: relative;
-    padding: 0 0 32px 28px;
-    opacity: 0;
-    transform: translateX(20px);
-    transition: all 0.5s;
-  }
-  .timeline-item.visible {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  .timeline-item::before {
-    content: '';
-    position: absolute; left: -5px; top: 6px;
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    background: var(--bg);
-    border: 2px solid var(--accent1);
-  }
-  .timeline-item:nth-child(2)::before { border-color: var(--accent2); }
-  .timeline-item:nth-child(3)::before { border-color: var(--accent3); }
-  .timeline-item:nth-child(4)::before { border-color: var(--accent4); }
-  .tl-year {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--accent1);
-    letter-spacing: 0.1em;
-    margin-bottom: 4px;
-  }
-  .tl-title {
-    font-family: var(--font-display);
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-  .tl-desc {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.5;
-  }
+  .hero-tag::before, .hero-tag::after { content: ''; flex: 0 0 26px; height: 1px; background: var(--accent2); opacity: 0.5; }
+  .hero-title { font-family: var(--font-display); font-size: clamp(50px, 11vw, 128px); font-weight: 800; line-height: 0.9; letter-spacing: -0.03em; color: var(--text-dark); opacity: 0; animation: fadeUp 0.8s 0.35s forwards; }
+  .hero-title .hi { color: var(--accent2); display: block; }
+  .hero-title .ha { color: var(--accent1); display: block; }
+  .hero-desc { font-size: clamp(15px, 2vw, 18px); color: var(--text-soft); max-width: 500px; margin: 22px auto 0; line-height: 1.7; opacity: 0; animation: fadeUp 0.8s 0.5s forwards; }
+  .hero-cta { margin-top: 40px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.8s 0.65s forwards; }
+  .btn-p { background: var(--accent2); color: #fff; border: none; padding: 13px 26px; font-family: var(--font-display); font-size: 13px; font-weight: 700; border-radius: 6px; cursor: pointer; letter-spacing: 0.07em; text-transform: uppercase; transition: transform 0.15s, box-shadow 0.15s; text-decoration: none; display: inline-block; }
+  .btn-p:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(108,71,255,0.35); }
+  .btn-o { background: transparent; color: var(--text-dark); border: 1.5px solid rgba(0,0,0,0.16); padding: 13px 26px; font-family: var(--font-display); font-size: 13px; font-weight: 600; border-radius: 6px; cursor: pointer; letter-spacing: 0.07em; text-transform: uppercase; transition: all 0.15s; text-decoration: none; display: inline-block; }
+  .btn-o:hover { border-color: var(--accent2); color: var(--accent2); }
+  .scroll-hint { position: absolute; bottom: 28px; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 7px; opacity: 0; animation: fadeIn 1s 1.6s forwards; }
+  .scroll-hint span { font-family: var(--font-mono); font-size: 10px; color: var(--text-soft); letter-spacing: 0.14em; text-transform: uppercase; }
+  .scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--accent2), transparent); animation: spulse 1.8s ease-in-out infinite; }
+  @keyframes spulse { 0%,100%{opacity:.3;transform:scaleY(.7);transform-origin:top} 50%{opacity:1;transform:scaleY(1);transform-origin:top} }
 
-  /* TIPOS DE IA */
-  #tipos {
-    padding: 120px 48px;
-    background: linear-gradient(180deg, var(--bg) 0%, var(--surface) 100%);
-  }
-  .tipos-container { max-width: 1100px; width: 100%; }
-  .tipos-tabs {
-    display: flex; gap: 4px;
-    margin-bottom: 48px;
-    background: rgba(255,255,255,0.04);
-    padding: 4px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    width: fit-content;
-  }
-  .tipo-tab {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 10px 20px;
-    border: none;
-    background: transparent;
-    color: var(--muted);
-    border-radius: 5px;
-    cursor: none;
-    transition: all 0.2s;
-  }
-  .tipo-tab.active, .tipo-tab:hover {
-    background: var(--surface);
-    color: var(--text);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  }
-  .tipo-tab.active { color: var(--accent1); }
-  .tipos-panels { position: relative; min-height: 380px; }
-  .tipo-panel {
-    display: none;
-    grid-template-columns: 1fr 1fr;
-    gap: 48px;
-    align-items: center;
-  }
-  .tipo-panel.active { display: grid; animation: panelIn 0.4s ease; }
-  @keyframes panelIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .tipo-info h3 {
-    font-family: var(--font-display);
-    font-size: 32px;
-    font-weight: 800;
-    margin-bottom: 12px;
-  }
-  .tipo-info p {
-    color: var(--muted);
-    font-size: 15px;
-    line-height: 1.7;
-    margin-bottom: 20px;
-  }
-  .tipo-tags {
-    display: flex; flex-wrap: wrap; gap: 8px;
-  }
-  .tipo-tag {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    padding: 5px 12px;
-    border-radius: 3px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-  .tipo-visual {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 40px;
-    display: flex; align-items: center; justify-content: center;
-    min-height: 280px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* AI CHART */
-  #aplicaciones {
-    padding: 120px 48px;
-  }
-  .apps-container { max-width: 1100px; width: 100%; }
-  .apps-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-top: 48px;
-  }
-  .app-card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 28px;
-    cursor: none;
-    transition: all 0.25s;
-    position: relative;
-    overflow: hidden;
-  }
-  .app-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, currentColor, transparent);
-    opacity: 0;
-    transition: opacity 0.25s;
-  }
-  .app-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(255,255,255,0.15);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-  }
-  .app-card:hover::before { opacity: 0.04; }
-  .app-icon {
-    width: 48px; height: 48px;
-    border-radius: 12px;
-    margin-bottom: 18px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-  }
-  .app-card h4 {
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-  .app-card p {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-  .app-stat {
-    margin-top: 18px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .stat-bar {
-    flex: 1;
-    height: 3px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .stat-fill {
-    height: 100%;
-    border-radius: 2px;
-    width: 0;
-    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .stat-label {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-
-  /* HOW IT WORKS */
-  #como-funciona {
-    padding: 120px 48px;
-    background: var(--surface);
-  }
-  .flow-container { max-width: 1000px; width: 100%; }
-  .flow-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    margin-top: 60px;
-  }
-  .flow-step {
-    display: grid;
-    grid-template-columns: 80px 1fr;
-    gap: 32px;
-    padding: 32px 0;
-    border-bottom: 1px solid var(--border);
-    cursor: none;
-    transition: all 0.2s;
-    opacity: 0.5;
-  }
-  .flow-step:hover, .flow-step.active {
-    opacity: 1;
-  }
-  .flow-step.active .flow-num { color: var(--accent1); }
-  .flow-num {
-    font-family: var(--font-display);
-    font-size: 52px;
-    font-weight: 800;
-    color: rgba(255,255,255,0.12);
-    line-height: 1;
-    transition: color 0.2s;
-    align-self: center;
-  }
-  .flow-content h3 {
-    font-family: var(--font-display);
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-  .flow-content p {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.65;
-    max-width: 600px;
-  }
-  .flow-visual-area {
-    margin-top: 60px;
-    background: rgba(0,245,196,0.04);
-    border: 1px solid rgba(0,245,196,0.12);
-    border-radius: 16px;
-    padding: 40px;
-    min-height: 200px;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.4s;
-  }
-
-  /* ÉTICA Y FUTURO */
-  #etica {
-    padding: 120px 48px;
-  }
-  .etica-container { max-width: 1100px; width: 100%; }
-  .pillars {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-top: 48px;
-  }
-  .pillar {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 28px 22px;
-    cursor: none;
-    transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .pillar:hover {
-    transform: translateY(-4px);
-  }
-  .pillar-accent {
-    position: absolute; top: 0; left: 0; right: 0;
-    height: 3px;
-  }
-  .pillar-icon { font-size: 28px; margin-bottom: 14px; }
-  .pillar h4 {
-    font-family: var(--font-display);
-    font-size: 17px;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-  .pillar p {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-
-  /* STATS SECTION */
-  #stats {
-    padding: 80px 48px;
-    background: linear-gradient(135deg, rgba(123,92,255,0.08) 0%, rgba(0,245,196,0.06) 100%);
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-  }
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 40px;
-    max-width: 1100px;
-    text-align: center;
-  }
-  .stat-item { opacity: 0; transform: translateY(20px); transition: all 0.6s; }
+  /* ── STATS  bg: deep indigo ── */
+  #stats { background: #160d38; min-height: unset; padding: 64px 48px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 28px; max-width: 1100px; width: 100%; text-align: center; }
+  .stat-item { opacity: 0; transform: translateY(18px); transition: all 0.6s; }
   .stat-item.visible { opacity: 1; transform: translateY(0); }
-  .stat-value {
-    font-family: var(--font-display);
-    font-size: 52px;
-    font-weight: 800;
-    line-height: 1;
-    background: linear-gradient(135deg, var(--accent1), var(--accent5));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .stat-label-main {
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: 8px;
-    line-height: 1.5;
-  }
+  .stat-value { font-family: var(--font-display); font-size: clamp(34px,5vw,52px); font-weight: 800; line-height: 1; background: linear-gradient(135deg, #00e5b4, #00aaff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .stat-lbl { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 8px; line-height: 1.5; }
 
-  /* RADAR CHART */
-  .radar-wrap {
-    display: flex;
-    align-items: center;
-    gap: 60px;
-    margin-top: 48px;
-  }
-  .radar-canvas-wrap { flex-shrink: 0; }
-  .radar-legend { flex: 1; }
-  .radar-item {
-    display: flex; align-items: center; gap: 14px;
-    padding: 14px 0;
-    border-bottom: 1px solid var(--border);
-    cursor: none;
-    transition: all 0.2s;
-  }
-  .radar-item:hover { padding-left: 8px; }
-  .radar-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .radar-item-label {
-    font-family: var(--font-display);
-    font-size: 15px;
-    font-weight: 600;
-    flex: 1;
-  }
-  .radar-item-value {
-    font-family: var(--font-mono);
-    font-size: 13px;
-    color: var(--muted);
-  }
-  .radar-bar {
-    width: 80px; height: 3px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .radar-bar-fill {
-    height: 100%;
-    border-radius: 2px;
-    width: 0;
-    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
-  }
+  /* ── QUÉ ES  bg: warm cream ── */
+  #que-es { background: #fdf8f2; }
+  .quees-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start; }
+  .quees-text p { color: var(--text-mid); font-size: 15px; line-height: 1.75; margin-bottom: 14px; }
+  .quees-text p strong { color: var(--text-dark); font-weight: 600; }
+  .timeline { position: relative; padding-left: 20px; }
+  .timeline::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(to bottom, var(--accent1), var(--accent2), var(--accent3), var(--accent4), var(--accent5)); }
+  .tl-item { position: relative; padding: 0 0 26px 24px; opacity: 0; transform: translateX(14px); transition: all 0.5s; }
+  .tl-item.visible { opacity: 1; transform: translateX(0); }
+  .tl-item::before { content: ''; position: absolute; left: -5px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 2.5px solid var(--accent1); box-shadow: 0 0 0 3px rgba(0,184,144,0.1); }
+  .tl-item:nth-child(2)::before { border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(108,71,255,0.1); }
+  .tl-item:nth-child(3)::before { border-color: var(--accent3); box-shadow: 0 0 0 3px rgba(255,61,90,0.1); }
+  .tl-item:nth-child(4)::before { border-color: var(--accent4); box-shadow: 0 0 0 3px rgba(212,146,10,0.1); }
+  .tl-item:nth-child(5)::before { border-color: var(--accent5); box-shadow: 0 0 0 3px rgba(0,136,212,0.1); }
+  .tl-year { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; margin-bottom: 3px; font-weight: 600; }
+  .tl-name { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--text-dark); margin-bottom: 3px; }
+  .tl-desc { font-size: 13px; color: var(--text-soft); line-height: 1.55; }
 
-  /* FOOTER / CTA */
-  #final {
-    padding: 120px 48px;
-    text-align: center;
-    background: var(--surface);
-    position: relative;
-    overflow: hidden;
-  }
-  .final-glow {
-    position: absolute;
-    width: 600px; height: 400px;
-    background: radial-gradient(ellipse, rgba(123,92,255,0.2) 0%, transparent 70%);
-    left: 50%; top: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-  }
-  .final-content { position: relative; z-index: 1; }
-  .final-title {
-    font-family: var(--font-display);
-    font-size: clamp(36px, 6vw, 80px);
-    font-weight: 800;
-    line-height: 1;
-    margin-bottom: 20px;
-  }
-  .final-sub {
-    font-size: 16px;
-    color: var(--muted);
-    max-width: 480px;
-    margin: 0 auto 40px;
-    line-height: 1.65;
-  }
-  .topics-cloud {
-    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
-    max-width: 700px; margin: 0 auto 60px;
-  }
-  .topic-chip {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 7px 16px;
-    border-radius: 3px;
-    border: 1px solid rgba(255,255,255,0.1);
-    color: var(--muted);
-    transition: all 0.2s;
-    cursor: none;
-  }
-  .topic-chip:hover {
-    color: var(--text);
-    border-color: var(--accent1);
-    background: rgba(0,245,196,0.06);
-  }
+  /* ── TIPOS  bg: mint tint ── */
+  #tipos { background: #f0fdf8; }
+  .tipos-tabs { display: flex; gap: 4px; flex-wrap: wrap; background: rgba(0,0,0,0.04); padding: 4px; border-radius: 10px; border: 1px solid var(--border); width: fit-content; margin-bottom: 36px; }
+  .t-tab { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; padding: 9px 16px; border: none; background: transparent; color: var(--text-soft); border-radius: 7px; cursor: pointer; transition: all 0.2s; }
+  .t-tab.active { background: #fff; color: var(--accent1); box-shadow: 0 2px 8px rgba(0,0,0,0.09); font-weight: 600; }
+  .t-tab:hover:not(.active) { background: rgba(255,255,255,0.6); color: var(--text-dark); }
+  .tipo-panels { min-height: 320px; }
+  .tipo-panel { display: none; grid-template-columns: 1fr 1fr; gap: 44px; align-items: center; }
+  .tipo-panel.active { display: grid; animation: pin 0.38s ease; }
+  @keyframes pin { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  .tipo-info h3 { font-family: var(--font-display); font-size: clamp(22px,3vw,32px); font-weight: 800; margin-bottom: 12px; color: var(--text-dark); }
+  .tipo-info p { color: var(--text-mid); font-size: 15px; line-height: 1.7; margin-bottom: 14px; }
+  .tipo-info p strong { color: var(--text-dark); }
+  .tipo-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+  .t-tag { font-family: var(--font-mono); font-size: 10px; padding: 5px 11px; border-radius: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .tipo-viz { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 28px; display: flex; align-items: center; justify-content: center; min-height: 250px; box-shadow: var(--shadow); overflow: hidden; }
 
-  /* ANIMATIONS */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+  /* ── APLICACIONES  bg: soft blush ── */
+  #aplicaciones { background: #fff6f7; }
+  .apps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 40px; }
+  .app-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; cursor: pointer; transition: all 0.22s; box-shadow: var(--shadow); }
+  .app-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+  .app-ico { width: 44px; height: 44px; border-radius: 12px; margin-bottom: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .app-card h4 { font-family: var(--font-display); font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--text-dark); }
+  .app-card p { font-size: 13px; color: var(--text-soft); line-height: 1.6; }
+  .app-stat-row { margin-top: 14px; display: flex; align-items: center; gap: 8px; }
+  .s-bar { flex: 1; height: 3px; background: rgba(0,0,0,0.08); border-radius: 2px; overflow: hidden; }
+  .s-fill { height: 100%; border-radius: 2px; width: 0; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+  .s-lbl { font-family: var(--font-mono); font-size: 10px; color: var(--text-soft); white-space: nowrap; }
 
-  .reveal {
-    opacity: 0;
-    transform: translateY(28px);
-    transition: opacity 0.7s, transform 0.7s;
-  }
-  .reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  /* ── CÓMO FUNCIONA  bg: lavender ── */
+  #como-funciona { background: #f5f3ff; }
+  .flow-steps { display: flex; flex-direction: column; margin-top: 48px; }
+  .f-step { display: grid; grid-template-columns: 64px 1fr; gap: 22px; padding: 22px 0; border-bottom: 1px solid var(--border); cursor: pointer; transition: all 0.2s; opacity: 0.45; }
+  .f-step:hover, .f-step.active { opacity: 1; }
+  .f-step.active .f-num { color: var(--accent2); }
+  .f-num { font-family: var(--font-display); font-size: 42px; font-weight: 800; color: rgba(0,0,0,0.1); line-height: 1; align-self: center; transition: color 0.2s; }
+  .f-body h3 { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 5px; }
+  .f-body p { font-size: 14px; color: var(--text-soft); line-height: 1.65; max-width: 540px; }
+  .flow-viz { margin-top: 44px; background: #fff; border: 1.5px solid var(--border); border-radius: 16px; padding: 32px; min-height: 170px; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); transition: border-color 0.4s, background 0.4s; }
 
-  /* FLOATING PARTICLES */
-  .particle {
-    position: absolute;
-    border-radius: 50%;
-    pointer-events: none;
-    animation: particleFloat linear infinite;
-  }
-  @keyframes particleFloat {
-    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
-  }
+  /* ── ÉTICA  bg: warm golden tint ── */
+  #etica { background: #fffbf0; }
+  .radar-wrap { display: flex; align-items: center; gap: 48px; margin-top: 40px; flex-wrap: wrap; }
+  .r-item { display: flex; align-items: center; gap: 11px; padding: 11px 0; border-bottom: 1px solid var(--border); cursor: default; transition: padding-left 0.2s; }
+  .r-item:hover { padding-left: 6px; }
+  .r-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .r-lbl { font-family: var(--font-display); font-size: 14px; font-weight: 600; color: var(--text-dark); flex: 1; }
+  .r-val { font-family: var(--font-mono); font-size: 11px; color: var(--text-soft); }
+  .r-bar { width: 68px; height: 3px; background: rgba(0,0,0,0.08); border-radius: 2px; overflow: hidden; }
+  .r-bar-fill { height: 100%; border-radius: 2px; width: 0; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+  .pillars { display: grid; grid-template-columns: repeat(4,1fr); gap: 13px; margin-top: 48px; }
+  .pillar { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 22px 18px; cursor: default; transition: all 0.2s; position: relative; overflow: hidden; box-shadow: var(--shadow); }
+  .pillar:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+  .p-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .p-ico { font-size: 24px; margin-bottom: 11px; }
+  .pillar h4 { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
+  .pillar p { font-size: 13px; color: var(--text-soft); line-height: 1.6; }
 
-  /* TYPE ANIMATION */
-  .typed-text { border-right: 2px solid var(--accent1); white-space: pre; }
+  /* ── FINAL  bg: sky tint ── */
+  #final { background: #f0f7ff; flex-direction: column; text-align: center; }
+  .final-blob { position: absolute; width: 500px; height: 500px; background: rgba(108,71,255,0.09); border-radius: 50%; filter: blur(90px); top: -100px; left: 50%; transform: translateX(-50%); pointer-events: none; }
+  .final-inner { position: relative; z-index: 1; padding: 120px 24px 80px; max-width: 800px; }
+  .final-title { font-family: var(--font-display); font-size: clamp(38px,7vw,88px); font-weight: 800; line-height: 0.95; letter-spacing: -0.025em; color: var(--text-dark); margin-bottom: 18px; }
+  .final-sub { font-size: 16px; color: var(--text-soft); max-width: 460px; margin: 0 auto 32px; line-height: 1.7; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 640px; margin: 0 auto 48px; }
+  .chip { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 13px; border-radius: 4px; border: 1px solid var(--border); color: var(--text-soft); background: #fff; transition: all 0.18s; cursor: default; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .chip:hover { color: var(--accent2); border-color: rgba(108,71,255,0.28); background: rgba(108,71,255,0.04); }
 
-  /* VISUAL ELEMENTS for tipo panels */
-  .nn-visual { width: 100%; }
-  .brain-ring {
-    width: 80px; height: 80px;
-    border: 3px solid transparent;
-    border-radius: 50%;
-    animation: spin 4s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.08); opacity: 0.7; }
-  }
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.7s, transform 0.7s; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .particle { position: absolute; border-radius: 50%; pointer-events: none; animation: pfloat linear infinite; }
+  @keyframes pfloat { 0%{transform:translateY(0);opacity:0} 10%{opacity:.4} 90%{opacity:.4} 100%{transform:translateY(-100vh);opacity:0} }
 
-  .hexagon {
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    animation: pulse 2.5s ease-in-out infinite;
-  }
-
-  /* TOOLTIP */
-  .tooltip {
-    position: fixed;
-    background: rgba(10,10,15,0.95);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 8px 14px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    pointer-events: none;
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.2s;
-    backdrop-filter: blur(10px);
-  }
-
-  /* SCROLLBAR */
+  /* ── SCROLLBAR ── */
   ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-track { background: #f0f4ff; }
   ::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 2px; }
+
+  /* ══════════ RESPONSIVE ══════════ */
+  @media (max-width: 900px) {
+    nav { padding: 12px 20px; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .wrap { padding: 86px 22px 60px; }
+    .quees-grid { grid-template-columns: 1fr; gap: 44px; }
+    .tipo-panel { grid-template-columns: 1fr; gap: 26px; }
+    .tipo-viz { min-height: 200px; padding: 18px; }
+    .apps-grid { grid-template-columns: repeat(2,1fr); gap: 13px; }
+    .pillars { grid-template-columns: repeat(2,1fr); }
+    .radar-wrap { flex-direction: column; gap: 28px; }
+    #stats { padding: 48px 22px; }
+    .stats-grid { grid-template-columns: repeat(2,1fr); gap: 20px; }
+    .flow-viz { padding: 22px; }
+  }
+
+  @media (max-width: 600px) {
+    .hero-cta { flex-direction: column; align-items: center; }
+    .btn-p, .btn-o { width: 100%; max-width: 280px; text-align: center; }
+    .apps-grid { grid-template-columns: 1fr; }
+    .pillars { grid-template-columns: 1fr 1fr; }
+    .stats-grid { grid-template-columns: repeat(2,1fr); }
+    .tipos-tabs { width: 100%; }
+    .t-tab { font-size: 10px; padding: 8px 10px; }
+    .f-step { grid-template-columns: 48px 1fr; gap: 14px; }
+    .f-num { font-size: 32px; }
+    .radar-wrap canvas { width: 240px !important; height: 240px !important; }
+  }
+
+  @media (max-width: 380px) {
+    .hero-title { font-size: 40px; }
+    .pillars { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -797,913 +276,509 @@
 <div class="cursor-ring" id="cursorRing"></div>
 <div class="tooltip" id="tooltip"></div>
 
-<!-- NAV -->
+<!-- ── NAV ── -->
 <nav>
   <div class="nav-logo">IA · Guía</div>
-  <ul class="nav-links">
+  <ul class="nav-links" id="navLinks">
     <li><a href="#que-es">¿Qué es?</a></li>
     <li><a href="#tipos">Tipos</a></li>
     <li><a href="#aplicaciones">Aplicaciones</a></li>
-    <li><a href="#como-funciona">Cómo Funciona</a></li>
+    <li><a href="#como-funciona">Proceso</a></li>
     <li><a href="#etica">Ética</a></li>
   </ul>
-  <div class="nav-progress">
-    <svg width="40" height="40" viewBox="0 0 40 40">
-      <circle cx="20" cy="20" r="15" stroke="rgba(255,255,255,0.08)" stroke-width="2" fill="none"/>
-      <circle class="progress-ring" cx="20" cy="20" r="15" id="progressRing"
-        style="stroke-dasharray: 94.25; stroke-dashoffset: 94.25;"/>
+  <div class="nav-right">
+    <svg class="nav-progress-svg" width="34" height="34" viewBox="0 0 34 34">
+      <circle class="pr-track" cx="17" cy="17" r="14"/>
+      <circle class="pr-fill" cx="17" cy="17" r="14" id="pRing"/>
     </svg>
+    <button class="hamburger" id="hBtn" aria-label="Menú"><span></span><span></span><span></span></button>
   </div>
 </nav>
+<div class="nav-drawer" id="drawer">
+  <a href="#que-es">01 — ¿Qué es la IA?</a>
+  <a href="#tipos">02 — Tipos de IA</a>
+  <a href="#aplicaciones">03 — Aplicaciones</a>
+  <a href="#como-funciona">04 — Cómo Funciona</a>
+  <a href="#etica">05 — Ética y Futuro</a>
+</div>
 
-<!-- HERO -->
+<!-- ── HERO  bg: pale indigo ── -->
 <section id="hero">
   <canvas id="neural-canvas"></canvas>
-  <div class="hero-content">
-    <div class="hero-tag">// Guía interactiva · 2025</div>
-    <h1 class="hero-title">
-      <span class="line-teal">INTELIGENCIA</span><br>
-      <span class="line-purple">ARTIFICIAL</span>
-    </h1>
-    <p class="hero-desc">Explora el universo de la IA: desde sus fundamentos hasta el futuro que está moldeando. Una guía visual, interactiva y profunda.</p>
+  <div class="blob blob-a"></div>
+  <div class="blob blob-b"></div>
+  <div class="blob blob-c"></div>
+  <div class="hero-inner">
+    <div class="hero-tag">Guía Interactiva · 2025</div>
+    <h1 class="hero-title"><span class="hi">INTELIGENCIA</span><span class="ha">ARTIFICIAL</span></h1>
+    <p class="hero-desc">Explora el universo de la IA: desde sus fundamentos hasta el futuro que está moldeando. Visual, interactiva y profunda.</p>
     <div class="hero-cta">
-      <a href="#que-es" class="btn-primary">Comenzar Exploración →</a>
-      <a href="#tipos" class="btn-outline">Ver Tipos de IA</a>
+      <a href="#que-es" class="btn-p">Comenzar exploración →</a>
+      <a href="#tipos" class="btn-o">Ver tipos de IA</a>
     </div>
   </div>
-  <div class="scroll-hint">
-    <span>Scroll</span>
-    <div class="scroll-line"></div>
-  </div>
+  <div class="scroll-hint"><span>Scroll</span><div class="scroll-line"></div></div>
 </section>
 
-<!-- STATS BAR -->
+<!-- ── STATS  bg: deep indigo ── -->
 <section id="stats">
   <div class="stats-grid">
-    <div class="stat-item">
-      <div class="stat-value" data-target="1958">0</div>
-      <div class="stat-label-main">Año del primer<br>programa de IA funcional</div>
-    </div>
-    <div class="stat-item" style="transition-delay:0.1s">
-      <div class="stat-value" data-target="407">0B$</div>
-      <div class="stat-label-main">Mercado global de IA<br>en 2027 (proyectado)</div>
-    </div>
-    <div class="stat-item" style="transition-delay:0.2s">
-      <div class="stat-value" data-target="97">0%</div>
-      <div class="stat-label-main">De las empresas Fortune 500<br>usan IA activamente</div>
-    </div>
-    <div class="stat-item" style="transition-delay:0.3s">
-      <div class="stat-value" data-target="100">0T+</div>
-      <div class="stat-label-main">Parámetros en modelos<br>de lenguaje actuales</div>
-    </div>
+    <div class="stat-item"><div class="stat-value" data-target="1950">0</div><div class="stat-lbl">Año del primer<br>Test de Turing</div></div>
+    <div class="stat-item" style="transition-delay:.1s"><div class="stat-value" data-target="407">0B$</div><div class="stat-lbl">Mercado global IA<br>en 2027 (proy.)</div></div>
+    <div class="stat-item" style="transition-delay:.2s"><div class="stat-value" data-target="97">0%</div><div class="stat-lbl">Fortune 500 usa<br>IA activamente</div></div>
+    <div class="stat-item" style="transition-delay:.3s"><div class="stat-value" data-target="100">0T+</div><div class="stat-lbl">Parámetros en<br>LLMs actuales</div></div>
   </div>
 </section>
 
-<!-- QUÉ ES LA IA -->
+<!-- ── QUÉ ES  bg: warm cream ── -->
 <section id="que-es">
-  <div class="que-es-grid reveal">
-    <div class="que-es-text">
-      <div class="section-header">
-        <div class="section-tag" style="color:var(--accent1)">01 — Fundamentos</div>
-        <h2 class="section-title">¿Qué es la<br>Inteligencia<br><span style="color:var(--accent1)">Artificial?</span></h2>
+  <div class="wrap">
+    <div class="quees-grid reveal">
+      <div class="quees-text">
+        <div class="s-tag" style="color:var(--accent2)">01 — Fundamentos</div>
+        <h2 class="s-title">¿Qué es la<br><span style="color:var(--accent2)">Inteligencia<br>Artificial?</span></h2>
+        <p>La <strong>Inteligencia Artificial</strong> es la capacidad de las máquinas para realizar tareas que habitualmente requieren inteligencia humana: aprender, razonar, resolver problemas y usar el lenguaje.</p>
+        <p>No es magia ni ciencia ficción. Es matemática, estadística y grandes cantidades de datos trabajando juntos para crear sistemas que <strong>aprenden de la experiencia</strong>.</p>
+        <p>Desde filtros de correo hasta coches autónomos, la IA ya forma parte inseparable de nuestra vida cotidiana.</p>
       </div>
-      <p>La <strong>Inteligencia Artificial</strong> es la capacidad de las máquinas para realizar tareas que, habitualmente, requieren inteligencia humana: aprender, razonar, resolver problemas, percibir el entorno y usar el lenguaje.</p>
-      <p>No es magia ni ciencia ficción. Es matemática, estadística y grandes cantidades de datos trabajando juntos para crear sistemas que <strong>aprenden de la experiencia</strong>.</p>
-      <p>Desde el correo no deseado hasta los coches autónomos, la IA ya forma parte inseparable de nuestra vida cotidiana.</p>
-    </div>
-    <div>
-      <div class="section-tag" style="color:var(--accent4); margin-bottom: 20px; font-family:var(--font-mono); font-size:11px; letter-spacing:0.2em; text-transform:uppercase; display:flex; align-items:center; gap:10px;">
-        <span style="width:28px;height:2px;background:var(--accent4);display:inline-block"></span>
-        Línea de tiempo
-      </div>
-      <div class="timeline">
-        <div class="timeline-item">
-          <div class="tl-year" style="color:var(--accent1)">1950</div>
-          <div class="tl-title">Test de Turing</div>
-          <div class="tl-desc">Alan Turing propone la pregunta: "¿pueden las máquinas pensar?" y crea el primer criterio de inteligencia artificial.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="tl-year" style="color:var(--accent2)">1956</div>
-          <div class="tl-title">Nace el término "IA"</div>
-          <div class="tl-desc">John McCarthy acuña el término en la Conferencia de Dartmouth. El sueño de crear mentes artificiales se formaliza.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="tl-year" style="color:var(--accent3)">1997</div>
-          <div class="tl-title">Deep Blue vs Kasparov</div>
-          <div class="tl-desc">Por primera vez, una computadora derrota al campeón mundial de ajedrez. Un hito que sacude al mundo.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="tl-year" style="color:var(--accent4)">2012</div>
-          <div class="tl-title">Revolución del Deep Learning</div>
-          <div class="tl-desc">AlexNet demuestra el poder de las redes neuronales profundas en visión por computadora. Todo cambia.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="tl-year" style="color:var(--accent5)">2022–</div>
-          <div class="tl-title">Era de los LLMs</div>
-          <div class="tl-desc">ChatGPT, Gemini, Claude. Los grandes modelos de lenguaje llevan la IA a cientos de millones de personas.</div>
+      <div>
+        <div class="s-tag" style="color:var(--accent4);margin-bottom:20px">Línea de tiempo</div>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-year" style="color:var(--accent1)">1950</div><div class="tl-name">Test de Turing</div><div class="tl-desc">Alan Turing propone: "¿pueden las máquinas pensar?" y sienta las bases de la IA.</div></div>
+          <div class="tl-item"><div class="tl-year" style="color:var(--accent2)">1956</div><div class="tl-name">Nace el término "IA"</div><div class="tl-desc">John McCarthy acuña el término en la Conferencia de Dartmouth. El sueño se formaliza.</div></div>
+          <div class="tl-item"><div class="tl-year" style="color:var(--accent3)">1997</div><div class="tl-name">Deep Blue vs Kasparov</div><div class="tl-desc">Por primera vez, una computadora derrota al campeón mundial de ajedrez.</div></div>
+          <div class="tl-item"><div class="tl-year" style="color:var(--accent4)">2012</div><div class="tl-name">Revolución Deep Learning</div><div class="tl-desc">AlexNet demuestra el poder de las redes neuronales profundas. Todo cambia.</div></div>
+          <div class="tl-item"><div class="tl-year" style="color:var(--accent5)">2022–</div><div class="tl-name">Era de los LLMs</div><div class="tl-desc">ChatGPT, Gemini, Claude. La IA llega a cientos de millones de personas.</div></div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- TIPOS DE IA -->
+<!-- ── TIPOS  bg: mint ── -->
 <section id="tipos">
-  <div class="tipos-container reveal">
-    <div class="section-header">
-      <div class="section-tag" style="color:var(--accent2)">02 — Taxonomía</div>
-      <h2 class="section-title">Tipos de <span style="color:var(--accent2)">IA</span></h2>
-    </div>
-    <div class="tipos-tabs">
-      <button class="tipo-tab active" data-panel="ml">Machine Learning</button>
-      <button class="tipo-tab" data-panel="dl">Deep Learning</button>
-      <button class="tipo-tab" data-panel="nlp">NLP</button>
-      <button class="tipo-tab" data-panel="cv">Visión Computacional</button>
-    </div>
-    <div class="tipos-panels">
-      <!-- ML -->
-      <div class="tipo-panel active" id="panel-ml">
-        <div class="tipo-info">
-          <h3 style="color:var(--accent1)">Machine Learning</h3>
-          <p>Algoritmos que <strong style="color:var(--text)">aprenden de datos</strong> sin ser programados explícitamente. El sistema identifica patrones y mejora con la experiencia.</p>
-          <p>Se divide en tres grandes paradigmas: aprendizaje supervisado, no supervisado y por refuerzo.</p>
-          <div class="tipo-tags">
-            <span class="tipo-tag" style="background:rgba(0,245,196,0.1);color:var(--accent1)">Supervisado</span>
-            <span class="tipo-tag" style="background:rgba(0,245,196,0.08);color:rgba(0,245,196,0.7)">No Supervisado</span>
-            <span class="tipo-tag" style="background:rgba(0,245,196,0.06);color:rgba(0,245,196,0.5)">Reinforcement</span>
-            <span class="tipo-tag" style="background:rgba(255,255,255,0.05);color:var(--muted)">Regresión</span>
-            <span class="tipo-tag" style="background:rgba(255,255,255,0.05);color:var(--muted)">Clasificación</span>
-          </div>
-        </div>
-        <div class="tipo-visual">
-          <canvas id="mlCanvas" width="320" height="240"></canvas>
-        </div>
+  <div class="wrap">
+    <div class="reveal">
+      <div class="s-tag" style="color:var(--accent1)">02 — Taxonomía</div>
+      <h2 class="s-title">Tipos de <span style="color:var(--accent1)">IA</span></h2>
+      <div class="tipos-tabs">
+        <button class="t-tab active" data-panel="ml">Machine Learning</button>
+        <button class="t-tab" data-panel="dl">Deep Learning</button>
+        <button class="t-tab" data-panel="nlp">NLP</button>
+        <button class="t-tab" data-panel="cv">Visión Comp.</button>
       </div>
-      <!-- DL -->
-      <div class="tipo-panel" id="panel-dl">
-        <div class="tipo-info">
-          <h3 style="color:var(--accent2)">Deep Learning</h3>
-          <p>Redes neuronales con <strong style="color:var(--text)">múltiples capas ocultas</strong> que aprenden representaciones jerárquicas de los datos.</p>
-          <p>Inspiradas en la neurología humana, son la base de los avances más impresionantes en IA: imágenes, voz, texto.</p>
-          <div class="tipo-tags">
-            <span class="tipo-tag" style="background:rgba(123,92,255,0.12);color:var(--accent2)">CNNs</span>
-            <span class="tipo-tag" style="background:rgba(123,92,255,0.1);color:rgba(123,92,255,0.8)">RNNs</span>
-            <span class="tipo-tag" style="background:rgba(123,92,255,0.08);color:rgba(123,92,255,0.6)">Transformers</span>
-            <span class="tipo-tag" style="background:rgba(255,255,255,0.05);color:var(--muted)">GANs</span>
-            <span class="tipo-tag" style="background:rgba(255,255,255,0.05);color:var(--muted)">Autoencoders</span>
+      <div class="tipo-panels">
+        <div class="tipo-panel active" id="panel-ml">
+          <div class="tipo-info">
+            <h3><span style="color:var(--accent1)">Machine</span> Learning</h3>
+            <p>Algoritmos que <strong>aprenden de datos</strong> sin ser programados explícitamente. El sistema mejora identificando patrones con la experiencia.</p>
+            <p>Se divide en tres paradigmas: supervisado, no supervisado y por refuerzo.</p>
+            <div class="tipo-tags">
+              <span class="t-tag" style="background:rgba(0,184,144,0.1);color:var(--accent1)">Supervisado</span>
+              <span class="t-tag" style="background:rgba(0,184,144,0.07);color:#009070">No Supervisado</span>
+              <span class="t-tag" style="background:rgba(0,184,144,0.05);color:#007055">Reinforcement</span>
+              <span class="t-tag" style="background:rgba(0,0,0,0.05);color:var(--text-soft)">Regresión</span>
+              <span class="t-tag" style="background:rgba(0,0,0,0.05);color:var(--text-soft)">Clasificación</span>
+            </div>
+          </div>
+          <div class="tipo-viz"><canvas id="mlCanvas" width="290" height="210"></canvas></div>
+        </div>
+        <div class="tipo-panel" id="panel-dl">
+          <div class="tipo-info">
+            <h3><span style="color:var(--accent2)">Deep</span> Learning</h3>
+            <p>Redes neuronales con <strong>múltiples capas</strong> que aprenden representaciones jerárquicas. La base de los avances más impresionantes en IA.</p>
+            <p>Impulsan el reconocimiento de imágenes, voz, texto y generación de contenido.</p>
+            <div class="tipo-tags">
+              <span class="t-tag" style="background:rgba(108,71,255,0.1);color:var(--accent2)">CNNs</span>
+              <span class="t-tag" style="background:rgba(108,71,255,0.08);color:#5535cc">RNNs</span>
+              <span class="t-tag" style="background:rgba(108,71,255,0.06);color:#4422aa">Transformers</span>
+              <span class="t-tag" style="background:rgba(0,0,0,0.05);color:var(--text-soft)">GANs</span>
+              <span class="t-tag" style="background:rgba(0,0,0,0.05);color:var(--text-soft)">Autoencoders</span>
+            </div>
+          </div>
+          <div class="tipo-viz"><canvas id="dlCanvas" width="290" height="210"></canvas></div>
+        </div>
+        <div class="tipo-panel" id="panel-nlp">
+          <div class="tipo-info">
+            <h3><span style="color:var(--accent3)">NLP</span> — Lenguaje</h3>
+            <p>Sistemas que entienden y <strong>generan lenguaje humano</strong>. La intersección de lingüística y machine learning.</p>
+            <p>Detrás de chatbots, traductores y los poderosos LLMs como GPT, Gemini o Claude.</p>
+            <div class="tipo-tags">
+              <span class="t-tag" style="background:rgba(255,61,90,0.1);color:var(--accent3)">Tokenización</span>
+              <span class="t-tag" style="background:rgba(255,61,90,0.07);color:#cc2040">Embeddings</span>
+              <span class="t-tag" style="background:rgba(255,61,90,0.05);color:#aa1030">Attention</span>
+              <span class="t-tag" style="background:rgba(0,0,0,0.05);color:var(--text-soft)">Fine-tuning</span>
+            </div>
+          </div>
+          <div class="tipo-viz">
+            <div style="text-align:left;width:100%;font-family:var(--font-mono);font-size:12px;color:var(--accent3);line-height:2" id="nlpTyped"></div>
           </div>
         </div>
-        <div class="tipo-visual">
-          <canvas id="dlCanvas" width="320" height="240"></canvas>
-        </div>
-      </div>
-      <!-- NLP -->
-      <div class="tipo-panel" id="panel-nlp">
-        <div class="tipo-info">
-          <h3 style="color:var(--accent3)">Procesamiento<br>del Lenguaje Natural</h3>
-          <p>Sistemas que entienden, interpretan y <strong style="color:var(--text)">generan lenguaje humano</strong>. La intersección de lingüística y machine learning.</p>
-          <p>Detrás de chatbots, traductores, correctores ortográficos y los potentes LLMs como GPT o Claude.</p>
-          <div class="tipo-tags">
-            <span class="tipo-tag" style="background:rgba(255,79,109,0.12);color:var(--accent3)">Tokenización</span>
-            <span class="tipo-tag" style="background:rgba(255,79,109,0.1);color:rgba(255,79,109,0.8)">Embeddings</span>
-            <span class="tipo-tag" style="background:rgba(255,79,109,0.08);color:rgba(255,79,109,0.6)">Attention</span>
-            <span class="tipo-tag" style="background:rgba(255,255,255,0.05);color:var(--muted)">Fine-tuning</span>
+        <div class="tipo-panel" id="panel-cv">
+          <div class="tipo-info">
+            <h3><span style="color:var(--accent4)">Visión</span> Computacional</h3>
+            <p>Algoritmos que permiten a las máquinas <strong>ver e interpretar</strong> imágenes y vídeos como lo haría un ser humano.</p>
+            <p>Diagnóstico médico, reconocimiento facial, coches autónomos, control de calidad.</p>
+            <div class="tipo-tags">
+              <span class="t-tag" style="background:rgba(212,146,10,0.12);color:var(--accent4)">Detección</span>
+              <span class="t-tag" style="background:rgba(212,146,10,0.08);color:#aa7000">Segmentación</span>
+              <span class="t-tag" style="background:rgba(212,146,10,0.06);color:#885800">Clasificación</span>
+              <span class="t-tag" style="background:rgba(0,0,0,0.05);color:var(--text-soft)">OCR</span>
+            </div>
           </div>
-        </div>
-        <div class="tipo-visual">
-          <div style="text-align:left;width:100%">
-            <div id="nlpTyped" style="font-family:var(--font-mono);font-size:13px;color:var(--accent3);line-height:1.8"></div>
-          </div>
-        </div>
-      </div>
-      <!-- CV -->
-      <div class="tipo-panel" id="panel-cv">
-        <div class="tipo-info">
-          <h3 style="color:var(--accent4)">Visión<br>Computacional</h3>
-          <p>Algoritmos que permiten a las máquinas <strong style="color:var(--text)">ver e interpretar imágenes</strong> y vídeos como lo haría un ser humano.</p>
-          <p>Diagnóstico médico por imágenes, reconocimiento facial, coches autónomos, control de calidad industrial.</p>
-          <div class="tipo-tags">
-            <span class="tipo-tag" style="background:rgba(245,196,0,0.12);color:var(--accent4)">Detección</span>
-            <span class="tipo-tag" style="background:rgba(245,196,0,0.1);color:rgba(245,196,0,0.8)">Segmentación</span>
-            <span class="tipo-tag" style="background:rgba(245,196,0,0.08);color:rgba(245,196,0,0.6)">Clasificación</span>
-            <span class="tipo-tag" style="background:rgba(255,255,255,0.05);color:var(--muted)">OCR</span>
-          </div>
-        </div>
-        <div class="tipo-visual">
-          <canvas id="cvCanvas" width="320" height="240"></canvas>
+          <div class="tipo-viz"><canvas id="cvCanvas" width="290" height="210"></canvas></div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- APLICACIONES -->
+<!-- ── APLICACIONES  bg: blush ── -->
 <section id="aplicaciones">
-  <div class="apps-container">
-    <div class="section-header reveal">
-      <div class="section-tag" style="color:var(--accent3)">03 — Aplicaciones</div>
-      <h2 class="section-title">La IA en el <span style="color:var(--accent3)">mundo real</span></h2>
-    </div>
+  <div class="wrap">
+    <div class="s-tag reveal" style="color:var(--accent3)">03 — Aplicaciones</div>
+    <h2 class="s-title reveal">La IA en el <span style="color:var(--accent3)">mundo real</span></h2>
     <div class="apps-grid reveal">
-      <div class="app-card" style="color:var(--accent1)">
-        <div class="app-icon" style="background:rgba(0,245,196,0.1);">🏥</div>
-        <h4>Medicina y Salud</h4>
-        <p>Diagnóstico de enfermedades por imágenes médicas, descubrimiento de fármacos y medicina personalizada.</p>
-        <div class="app-stat">
-          <div class="stat-bar"><div class="stat-fill" style="background:var(--accent1)" data-width="87"></div></div>
-          <div class="stat-label">87% adopción</div>
-        </div>
-      </div>
-      <div class="app-card" style="color:var(--accent2)">
-        <div class="app-icon" style="background:rgba(123,92,255,0.1);">🚗</div>
-        <h4>Transporte Autónomo</h4>
-        <p>Vehículos que perciben su entorno, toman decisiones y navegan sin intervención humana en tiempo real.</p>
-        <div class="app-stat">
-          <div class="stat-bar"><div class="stat-fill" style="background:var(--accent2)" data-width="62"></div></div>
-          <div class="stat-label">62% avance</div>
-        </div>
-      </div>
-      <div class="app-card" style="color:var(--accent3)">
-        <div class="app-icon" style="background:rgba(255,79,109,0.1);">💬</div>
-        <h4>Asistentes Conversacionales</h4>
-        <p>Modelos de lenguaje que mantienen diálogos naturales, generan texto y resuelven tareas complejas.</p>
-        <div class="app-stat">
-          <div class="stat-bar"><div class="stat-fill" style="background:var(--accent3)" data-width="95"></div></div>
-          <div class="stat-label">95% usuario</div>
-        </div>
-      </div>
-      <div class="app-card" style="color:var(--accent4)">
-        <div class="app-icon" style="background:rgba(245,196,0,0.1);">🎨</div>
-        <h4>Arte Generativo</h4>
-        <p>Creación de imágenes, música, vídeos y código a partir de descripciones en lenguaje natural.</p>
-        <div class="app-stat">
-          <div class="stat-bar"><div class="stat-fill" style="background:var(--accent4)" data-width="78"></div></div>
-          <div class="stat-label">78% creativo</div>
-        </div>
-      </div>
-      <div class="app-card" style="color:var(--accent5)">
-        <div class="app-icon" style="background:rgba(0,184,255,0.1);">📈</div>
-        <h4>Finanzas y Trading</h4>
-        <p>Detección de fraudes, predicción de mercados, gestión de riesgos y asesoramiento financiero automatizado.</p>
-        <div class="app-stat">
-          <div class="stat-bar"><div class="stat-fill" style="background:var(--accent5)" data-width="81"></div></div>
-          <div class="stat-label">81% integrado</div>
-        </div>
-      </div>
-      <div class="app-card" style="color:rgba(255,255,255,0.6)">
-        <div class="app-icon" style="background:rgba(255,255,255,0.07);">🔬</div>
-        <h4>Ciencia e Investigación</h4>
-        <p>Predicción de estructuras proteínicas, simulaciones climáticas y aceleración del método científico.</p>
-        <div class="app-stat">
-          <div class="stat-bar"><div class="stat-fill" style="background:rgba(255,255,255,0.4)" data-width="73"></div></div>
-          <div class="stat-label">73% impacto</div>
-        </div>
-      </div>
+      <div class="app-card"><div class="app-ico" style="background:rgba(0,184,144,0.1)">🏥</div><h4>Medicina y Salud</h4><p>Diagnóstico por imágenes, descubrimiento de fármacos y medicina de precisión personalizada.</p><div class="app-stat-row"><div class="s-bar"><div class="s-fill" style="background:var(--accent1)" data-width="87"></div></div><div class="s-lbl">87%</div></div></div>
+      <div class="app-card"><div class="app-ico" style="background:rgba(108,71,255,0.1)">🚗</div><h4>Transporte Autónomo</h4><p>Vehículos que perciben su entorno y navegan sin intervención humana en tiempo real.</p><div class="app-stat-row"><div class="s-bar"><div class="s-fill" style="background:var(--accent2)" data-width="62"></div></div><div class="s-lbl">62%</div></div></div>
+      <div class="app-card"><div class="app-ico" style="background:rgba(255,61,90,0.1)">💬</div><h4>Asistentes Conversacionales</h4><p>Modelos de lenguaje que mantienen diálogos naturales y resuelven tareas complejas.</p><div class="app-stat-row"><div class="s-bar"><div class="s-fill" style="background:var(--accent3)" data-width="95"></div></div><div class="s-lbl">95%</div></div></div>
+      <div class="app-card"><div class="app-ico" style="background:rgba(212,146,10,0.1)">🎨</div><h4>Arte Generativo</h4><p>Imágenes, música, vídeos y código generados desde descripciones en lenguaje natural.</p><div class="app-stat-row"><div class="s-bar"><div class="s-fill" style="background:var(--accent4)" data-width="78"></div></div><div class="s-lbl">78%</div></div></div>
+      <div class="app-card"><div class="app-ico" style="background:rgba(0,136,212,0.1)">📈</div><h4>Finanzas y Trading</h4><p>Detección de fraudes, predicción de mercados y asesoramiento financiero automatizado.</p><div class="app-stat-row"><div class="s-bar"><div class="s-fill" style="background:var(--accent5)" data-width="81"></div></div><div class="s-lbl">81%</div></div></div>
+      <div class="app-card"><div class="app-ico" style="background:rgba(0,0,0,0.06)">🔬</div><h4>Ciencia e Investigación</h4><p>Predicción de proteínas, simulaciones climáticas y aceleración del método científico.</p><div class="app-stat-row"><div class="s-bar"><div class="s-fill" style="background:var(--text-soft)" data-width="73"></div></div><div class="s-lbl">73%</div></div></div>
     </div>
   </div>
 </section>
 
-<!-- CÓMO FUNCIONA -->
+<!-- ── CÓMO FUNCIONA  bg: lavender ── -->
 <section id="como-funciona">
-  <div class="flow-container reveal">
-    <div class="section-header">
-      <div class="section-tag" style="color:var(--accent5)">04 — Proceso</div>
-      <h2 class="section-title">¿Cómo <span style="color:var(--accent5)">aprende</span><br>una IA?</h2>
+  <div class="wrap">
+    <div class="reveal">
+      <div class="s-tag" style="color:var(--accent5)">04 — Proceso</div>
+      <h2 class="s-title">¿Cómo <span style="color:var(--accent5)">aprende</span> una IA?</h2>
     </div>
-    <div class="flow-steps" id="flowSteps">
-      <div class="flow-step active" data-step="0">
-        <div class="flow-num">01</div>
-        <div class="flow-content">
-          <h3>Recolección de Datos</h3>
-          <p>Todo empieza con datos: texto, imágenes, audio, números. Cuanto más diversos y representativos, mejor aprenderá el modelo. Los datos son el combustible de la IA.</p>
-        </div>
+    <div class="reveal" style="transition-delay:.1s">
+      <div class="flow-steps" id="fSteps">
+        <div class="f-step active" data-i="0"><div class="f-num">01</div><div class="f-body"><h3>Recolección de Datos</h3><p>Todo empieza con datos: texto, imágenes, audio, números. Cuanto más diversos, mejor aprenderá el modelo.</p></div></div>
+        <div class="f-step" data-i="1"><div class="f-num">02</div><div class="f-body"><h3>Preprocesamiento</h3><p>Los datos se limpian, normalizan y transforman. Se eliminan ruidos y se generan features relevantes.</p></div></div>
+        <div class="f-step" data-i="2"><div class="f-num">03</div><div class="f-body"><h3>Entrenamiento</h3><p>El modelo ajusta millones de parámetros minimizando el error mediante retropropagación y descenso de gradiente.</p></div></div>
+        <div class="f-step" data-i="3"><div class="f-num">04</div><div class="f-body"><h3>Evaluación y Validación</h3><p>Se mide el desempeño con datos nunca vistos. Precisión, recall y F1 determinan si el modelo generaliza bien.</p></div></div>
+        <div class="f-step" data-i="4"><div class="f-num">05</div><div class="f-body"><h3>Despliegue e Inferencia</h3><p>El modelo integrado recibe entradas en tiempo real y genera predicciones que impactan el mundo real.</p></div></div>
       </div>
-      <div class="flow-step" data-step="1">
-        <div class="flow-num">02</div>
-        <div class="flow-content">
-          <h3>Preprocesamiento</h3>
-          <p>Los datos crudos se limpian, normalizan y transforman en formatos que el modelo puede procesar. Se eliminan ruidos, se balancean clases, se generan features relevantes.</p>
-        </div>
-      </div>
-      <div class="flow-step" data-step="2">
-        <div class="flow-num">03</div>
-        <div class="flow-content">
-          <h3>Entrenamiento</h3>
-          <p>El modelo ajusta millones de parámetros (pesos) iterativamente, minimizando el error de sus predicciones mediante el algoritmo de retropropagación y descenso de gradiente.</p>
-        </div>
-      </div>
-      <div class="flow-step" data-step="3">
-        <div class="flow-num">04</div>
-        <div class="flow-content">
-          <h3>Evaluación y Validación</h3>
-          <p>Se mide el desempeño del modelo con datos que nunca ha visto. Métricas como precisión, recall o F1-score determinan si el modelo generaliza bien o hace overfitting.</p>
-        </div>
-      </div>
-      <div class="flow-step" data-step="4">
-        <div class="flow-num">05</div>
-        <div class="flow-content">
-          <h3>Despliegue e Inferencia</h3>
-          <p>El modelo entrenado se integra en aplicaciones reales. Recibe nuevas entradas en tiempo real y genera predicciones que impactan decisiones reales del mundo.</p>
-        </div>
-      </div>
-    </div>
-    <div class="flow-visual-area" id="flowVisual">
-      <div id="flowVizContent" style="text-align:center;width:100%"></div>
+      <div class="flow-viz" id="flowViz"><div id="fVizContent" style="width:100%;text-align:center"></div></div>
     </div>
   </div>
 </section>
 
-<!-- ÉTICA -->
+<!-- ── ÉTICA  bg: golden tint ── -->
 <section id="etica">
-  <div class="etica-container">
-    <div class="section-header reveal">
-      <div class="section-tag" style="color:var(--accent3)">05 — Ética y Futuro</div>
-      <h2 class="section-title">El lado <span style="color:var(--accent3)">humano</span><br>de la IA</h2>
+  <div class="wrap">
+    <div class="reveal">
+      <div class="s-tag" style="color:var(--accent3)">05 — Ética y Futuro</div>
+      <h2 class="s-title">El lado <span style="color:var(--accent3)">humano</span> de la IA</h2>
     </div>
-
-    <!-- Radar -->
     <div class="radar-wrap reveal">
-      <div class="radar-canvas-wrap">
-        <canvas id="radarChart" width="320" height="320"></canvas>
-      </div>
-      <div class="radar-legend">
-        <div style="font-family:var(--font-display);font-size:14px;color:var(--muted);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.1em">Madurez ética por área</div>
-        <div class="radar-item" data-tooltip="Nivel de explicabilidad de los modelos actuales">
-          <div class="radar-dot" style="background:var(--accent1)"></div>
-          <div class="radar-item-label">Transparencia</div>
-          <div class="radar-bar"><div class="radar-bar-fill" style="background:var(--accent1)" data-width="45"></div></div>
-          <div class="radar-item-value">45%</div>
-        </div>
-        <div class="radar-item" data-tooltip="Representación equitativa en los datos de entrenamiento">
-          <div class="radar-dot" style="background:var(--accent2)"></div>
-          <div class="radar-item-label">Equidad</div>
-          <div class="radar-bar"><div class="radar-bar-fill" style="background:var(--accent2)" data-width="38"></div></div>
-          <div class="radar-item-value">38%</div>
-        </div>
-        <div class="radar-item" data-tooltip="Control y protección de datos personales">
-          <div class="radar-dot" style="background:var(--accent3)"></div>
-          <div class="radar-item-label">Privacidad</div>
-          <div class="radar-bar"><div class="radar-bar-fill" style="background:var(--accent3)" data-width="52"></div></div>
-          <div class="radar-item-value">52%</div>
-        </div>
-        <div class="radar-item" data-tooltip="Marco legal y normativo de la IA a nivel global">
-          <div class="radar-dot" style="background:var(--accent4)"></div>
-          <div class="radar-item-label">Regulación</div>
-          <div class="radar-bar"><div class="radar-bar-fill" style="background:var(--accent4)" data-width="30"></div></div>
-          <div class="radar-item-value">30%</div>
-        </div>
-        <div class="radar-item" data-tooltip="Capacidad de las personas para entender y controlar la IA">
-          <div class="radar-dot" style="background:var(--accent5)"></div>
-          <div class="radar-item-label">Accesibilidad</div>
-          <div class="radar-bar"><div class="radar-bar-fill" style="background:var(--accent5)" data-width="60"></div></div>
-          <div class="radar-item-value">60%</div>
-        </div>
-        <div class="radar-item">
-          <div class="radar-dot" style="background:#ff9f43"></div>
-          <div class="radar-item-label">Seguridad</div>
-          <div class="radar-bar"><div class="radar-bar-fill" style="background:#ff9f43" data-width="41"></div></div>
-          <div class="radar-item-value">41%</div>
-        </div>
+      <div><canvas id="rdrCanvas" width="290" height="290"></canvas></div>
+      <div style="flex:1;min-width:200px">
+        <div style="font-family:var(--font-display);font-size:12px;color:var(--text-soft);margin-bottom:12px;text-transform:uppercase;letter-spacing:.1em">Madurez ética por área</div>
+        <div class="r-item" data-tooltip="Explicabilidad de modelos actuales"><div class="r-dot" style="background:var(--accent1)"></div><div class="r-lbl">Transparencia</div><div class="r-bar"><div class="r-bar-fill" style="background:var(--accent1)" data-w="45"></div></div><div class="r-val">45%</div></div>
+        <div class="r-item" data-tooltip="Representación equitativa en datos de entrenamiento"><div class="r-dot" style="background:var(--accent2)"></div><div class="r-lbl">Equidad</div><div class="r-bar"><div class="r-bar-fill" style="background:var(--accent2)" data-w="38"></div></div><div class="r-val">38%</div></div>
+        <div class="r-item" data-tooltip="Control y protección de datos personales"><div class="r-dot" style="background:var(--accent3)"></div><div class="r-lbl">Privacidad</div><div class="r-bar"><div class="r-bar-fill" style="background:var(--accent3)" data-w="52"></div></div><div class="r-val">52%</div></div>
+        <div class="r-item" data-tooltip="Marco legal y normativo global"><div class="r-dot" style="background:var(--accent4)"></div><div class="r-lbl">Regulación</div><div class="r-bar"><div class="r-bar-fill" style="background:var(--accent4)" data-w="30"></div></div><div class="r-val">30%</div></div>
+        <div class="r-item" data-tooltip="Comprensión ciudadana de la IA"><div class="r-dot" style="background:var(--accent5)"></div><div class="r-lbl">Accesibilidad</div><div class="r-bar"><div class="r-bar-fill" style="background:var(--accent5)" data-w="60"></div></div><div class="r-val">60%</div></div>
+        <div class="r-item"><div class="r-dot" style="background:#c06000"></div><div class="r-lbl">Seguridad</div><div class="r-bar"><div class="r-bar-fill" style="background:#c06000" data-w="41"></div></div><div class="r-val">41%</div></div>
       </div>
     </div>
-
-    <div class="pillars reveal" style="margin-top:60px">
-      <div class="pillar">
-        <div class="pillar-accent" style="background:var(--accent1)"></div>
-        <div class="pillar-icon">👁️</div>
-        <h4>Transparencia</h4>
-        <p>Los sistemas de IA deben ser explicables. Las personas afectadas por una decisión algorítmica tienen derecho a entenderla.</p>
-      </div>
-      <div class="pillar">
-        <div class="pillar-accent" style="background:var(--accent2)"></div>
-        <div class="pillar-icon">⚖️</div>
-        <h4>Justicia</h4>
-        <p>Los modelos no deben perpetuar ni amplificar sesgos. La IA debe funcionar equitativamente para todos los grupos sociales.</p>
-      </div>
-      <div class="pillar">
-        <div class="pillar-accent" style="background:var(--accent3)"></div>
-        <div class="pillar-icon">🛡️</div>
-        <h4>Privacidad</h4>
-        <p>Los datos personales son un derecho fundamental. La IA debe minimizar su recopilación y usarlos con consentimiento.</p>
-      </div>
-      <div class="pillar">
-        <div class="pillar-accent" style="background:var(--accent4)"></div>
-        <div class="pillar-icon">🤝</div>
-        <h4>Responsabilidad</h4>
-        <p>Siempre debe haber humanos responsables de las decisiones de sistemas autónomos, especialmente en contextos críticos.</p>
-      </div>
+    <div class="pillars reveal" style="transition-delay:.2s">
+      <div class="pillar"><div class="p-bar" style="background:var(--accent1)"></div><div class="p-ico">👁️</div><h4>Transparencia</h4><p>Los sistemas deben ser explicables. Los afectados por una decisión algorítmica tienen derecho a entenderla.</p></div>
+      <div class="pillar"><div class="p-bar" style="background:var(--accent2)"></div><div class="p-ico">⚖️</div><h4>Justicia</h4><p>Los modelos no deben perpetuar sesgos. La IA debe funcionar equitativamente para todos los grupos sociales.</p></div>
+      <div class="pillar"><div class="p-bar" style="background:var(--accent3)"></div><div class="p-ico">🛡️</div><h4>Privacidad</h4><p>Los datos personales son un derecho fundamental. La IA debe minimizar su recopilación y usarlos con consentimiento.</p></div>
+      <div class="pillar"><div class="p-bar" style="background:var(--accent4)"></div><div class="p-ico">🤝</div><h4>Responsabilidad</h4><p>Siempre debe haber humanos responsables de las decisiones de sistemas autónomos en contextos críticos.</p></div>
     </div>
   </div>
 </section>
 
-<!-- FINAL CTA -->
+<!-- ── FINAL  bg: sky tint ── -->
 <section id="final">
-  <div class="final-glow"></div>
-  <div class="final-content">
-    <div class="hero-tag" style="opacity:1;animation:none;color:var(--accent2)">// El futuro es ahora</div>
+  <div class="final-blob"></div>
+  <div class="final-inner">
+    <div class="hero-tag" style="opacity:1;animation:none;color:var(--accent2)">El futuro es ahora</div>
     <h2 class="final-title">El viaje<br><span style="color:var(--accent2)">apenas</span><br>comienza</h2>
-    <p class="final-sub">La inteligencia artificial no es el destino. Es el vehículo hacia un mundo donde humanos y máquinas colaboran para resolver los grandes desafíos de la humanidad.</p>
-    <div class="topics-cloud">
-      <span class="topic-chip">AGI</span>
-      <span class="topic-chip">Neuromorphic Computing</span>
-      <span class="topic-chip">Quantum AI</span>
-      <span class="topic-chip">Federated Learning</span>
-      <span class="topic-chip">AI Alignment</span>
-      <span class="topic-chip">Multimodal Models</span>
-      <span class="topic-chip">Edge AI</span>
-      <span class="topic-chip">AI Regulation</span>
-      <span class="topic-chip">Human-AI Collaboration</span>
-      <span class="topic-chip">Neuromorphic Chips</span>
-      <span class="topic-chip">Foundation Models</span>
-      <span class="topic-chip">Explainable AI</span>
+    <p class="final-sub">La IA no es el destino. Es el vehículo hacia un mundo donde humanos y máquinas colaboran para resolver los grandes desafíos de la humanidad.</p>
+    <div class="chips">
+      <span class="chip">AGI</span><span class="chip">Neuromorphic Computing</span><span class="chip">Quantum AI</span>
+      <span class="chip">Federated Learning</span><span class="chip">AI Alignment</span><span class="chip">Multimodal Models</span>
+      <span class="chip">Edge AI</span><span class="chip">AI Regulation</span><span class="chip">Human-AI Collaboration</span>
+      <span class="chip">Foundation Models</span><span class="chip">Explainable AI</span>
     </div>
-    <div class="hero-cta" style="opacity:1;animation:none;">
-      <a href="#hero" class="btn-primary">↑ Volver al inicio</a>
-    </div>
+    <div class="hero-cta" style="opacity:1;animation:none"><a href="#hero" class="btn-p">↑ Volver al inicio</a></div>
   </div>
 </section>
 
 <script>
-// === CURSOR ===
-const cursor = document.getElementById('cursor');
-const cursorRing = document.getElementById('cursorRing');
-let mx = 0, my = 0, rx = 0, ry = 0;
-document.addEventListener('mousemove', e => {
-  mx = e.clientX; my = e.clientY;
-  cursor.style.transform = `translate(${mx-5}px, ${my-5}px)`;
-});
-function animCursor() {
-  rx += (mx - rx) * 0.12;
-  ry += (my - ry) * 0.12;
-  cursorRing.style.transform = `translate(${rx-19}px, ${ry-19}px)`;
-  requestAnimationFrame(animCursor);
+// ── CURSOR ──
+const $cur = document.getElementById('cursor');
+const $ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+if(window.matchMedia('(pointer:fine)').matches){
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX; my=e.clientY;
+    $cur.style.transform=`translate(${mx-5}px,${my-5}px)`;
+  });
+  (function tick(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; $ring.style.transform=`translate(${rx-17}px,${ry-17}px)`; requestAnimationFrame(tick); })();
 }
-animCursor();
 
-// === TOOLTIP ===
-const tooltip = document.getElementById('tooltip');
-document.querySelectorAll('[data-tooltip]').forEach(el => {
-  el.addEventListener('mouseenter', e => {
-    tooltip.textContent = el.dataset.tooltip;
-    tooltip.style.opacity = '1';
-  });
-  el.addEventListener('mousemove', e => {
-    tooltip.style.left = (e.clientX + 16) + 'px';
-    tooltip.style.top = (e.clientY - 10) + 'px';
-  });
-  el.addEventListener('mouseleave', () => {
-    tooltip.style.opacity = '0';
-  });
+// ── HAMBURGER ──
+const hBtn=document.getElementById('hBtn');
+const drawer=document.getElementById('drawer');
+hBtn.addEventListener('click',()=>{ hBtn.classList.toggle('open'); drawer.classList.toggle('open'); });
+drawer.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{ hBtn.classList.remove('open'); drawer.classList.remove('open'); }));
+
+// ── TOOLTIP ──
+const $tip = document.getElementById('tooltip');
+document.querySelectorAll('[data-tooltip]').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ $tip.textContent=el.dataset.tooltip; $tip.style.opacity='1'; });
+  el.addEventListener('mousemove',e=>{ $tip.style.left=(e.clientX+14)+'px'; $tip.style.top=(e.clientY-8)+'px'; });
+  el.addEventListener('mouseleave',()=>{ $tip.style.opacity='0'; });
 });
 
-// === PROGRESS RING ===
-const progressRing = document.getElementById('progressRing');
-const C = 2 * Math.PI * 15;
-progressRing.style.strokeDasharray = C;
-window.addEventListener('scroll', () => {
-  const scrolled = window.scrollY / (document.body.scrollHeight - window.innerHeight);
-  progressRing.style.strokeDashoffset = C * (1 - scrolled);
-});
+// ── PROGRESS RING ──
+const pRing=document.getElementById('pRing');
+const PC=2*Math.PI*14;
+pRing.style.strokeDasharray=PC;
+window.addEventListener('scroll',()=>{ pRing.style.strokeDashoffset=PC*(1-window.scrollY/(document.body.scrollHeight-window.innerHeight)); });
 
-// === REVEAL ON SCROLL ===
-const reveals = document.querySelectorAll('.reveal, .timeline-item, .stat-item');
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-      if (e.target.classList.contains('stat-item')) animateCounter(e.target);
-      if (e.target.closest('#etica')) animateBars();
-      if (e.target.closest('#aplicaciones')) animateStatBars();
-    }
-  });
-}, { threshold: 0.15 });
-reveals.forEach(r => observer.observe(r));
+// ── REVEAL ──
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{
+  if(e.isIntersecting){ e.target.classList.add('visible'); if(e.target.classList.contains('stat-item')) countUp(e.target); }
+}),{threshold:.12});
+document.querySelectorAll('.reveal,.tl-item,.stat-item').forEach(el=>obs.observe(el));
 
-// === COUNTER ANIMATION ===
-function animateCounter(el) {
-  const valueEl = el.querySelector('.stat-value');
-  if (!valueEl || valueEl.dataset.animated) return;
-  valueEl.dataset.animated = true;
-  const target = parseInt(valueEl.dataset.target);
-  const suffix = valueEl.textContent.replace(/\d/g, '');
-  const duration = 1800;
-  const start = performance.now();
-  function update(now) {
-    const t = Math.min((now - start) / duration, 1);
-    const ease = 1 - Math.pow(1 - t, 3);
-    valueEl.textContent = Math.round(ease * target) + suffix;
-    if (t < 1) requestAnimationFrame(update);
-  }
-  requestAnimationFrame(update);
+// ── COUNT UP ──
+function countUp(el){
+  const v=el.querySelector('.stat-value');
+  if(!v||v.dataset.done) return; v.dataset.done='1';
+  const target=parseInt(v.dataset.target), suffix=v.textContent.replace(/\d/g,''), dur=1800, t0=performance.now();
+  (function upd(now){ const t=Math.min((now-t0)/dur,1), e=1-Math.pow(1-t,3); v.textContent=Math.round(e*target)+suffix; if(t<1) requestAnimationFrame(upd); })(t0);
 }
 
-// === BAR ANIMATIONS ===
-function animateStatBars() {
-  document.querySelectorAll('.stat-fill[data-width]').forEach(b => {
-    if (!b.dataset.animated) {
-      b.dataset.animated = true;
-      setTimeout(() => b.style.width = b.dataset.width + '%', 200);
-    }
-  });
-}
-function animateBars() {
-  document.querySelectorAll('.radar-bar-fill[data-width]').forEach(b => {
-    if (!b.dataset.animated) {
-      b.dataset.animated = true;
-      setTimeout(() => b.style.width = b.dataset.width + '%', 200);
-      drawRadar();
-    }
-  });
+// ── APP BARS ──
+new IntersectionObserver(e=>{if(e[0].isIntersecting) document.querySelectorAll('.s-fill[data-width]').forEach(b=>{ if(!b.dataset.done){b.dataset.done='1'; setTimeout(()=>b.style.width=b.dataset.width+'%',200);} });},{threshold:.2}).observe(document.getElementById('aplicaciones'));
+
+// ── RADAR BARS ──
+function animRBars(){ document.querySelectorAll('.r-bar-fill[data-w]').forEach(b=>{ if(!b.dataset.done){b.dataset.done='1'; setTimeout(()=>b.style.width=b.dataset.w+'%',200);} }); }
+
+// ── NEURAL CANVAS ──
+const nc=document.getElementById('neural-canvas');
+const nctx=nc.getContext('2d');
+function szNC(){ nc.width=window.innerWidth; nc.height=window.innerHeight; }
+szNC(); window.addEventListener('resize',szNC);
+const pts=Array.from({length:48},()=>({x:Math.random()*2000,y:Math.random()*1000,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*2+.8}));
+(function drawNC(){
+  nctx.clearRect(0,0,nc.width,nc.height);
+  pts.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>nc.width)p.vx*=-1; if(p.y<0||p.y>nc.height)p.vy*=-1; });
+  pts.forEach((a,i)=>pts.slice(i+1).forEach(b=>{ const d=Math.hypot(a.x-b.x,a.y-b.y); if(d<110){ nctx.beginPath(); nctx.strokeStyle=`rgba(108,71,255,${(1-d/110)*.18})`; nctx.lineWidth=.7; nctx.moveTo(a.x,a.y); nctx.lineTo(b.x,b.y); nctx.stroke(); } }));
+  pts.forEach(p=>{ nctx.beginPath(); nctx.fillStyle='rgba(0,184,144,0.45)'; nctx.arc(p.x,p.y,p.r,0,Math.PI*2); nctx.fill(); });
+  requestAnimationFrame(drawNC);
+})();
+
+// ── ML CANVAS ──
+function drawML(){
+  const c=document.getElementById('mlCanvas'); if(!c)return;
+  const ctx=c.getContext('2d');
+  const A=Array.from({length:16},()=>({x:40+Math.random()*90,y:25+Math.random()*80}));
+  const B=Array.from({length:16},()=>({x:165+Math.random()*90,y:105+Math.random()*80}));
+  let angle=0;
+  (function draw(){
+    ctx.clearRect(0,0,290,210);
+    ctx.fillStyle='rgba(0,184,144,0.03)'; ctx.fillRect(0,0,290,210);
+    ctx.strokeStyle='rgba(0,0,0,0.05)'; ctx.lineWidth=1;
+    for(let i=0;i<290;i+=36){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,210);ctx.stroke();}
+    for(let i=0;i<210;i+=36){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(290,i);ctx.stroke();}
+    const w=Math.sin(angle)*12;
+    ctx.beginPath(); ctx.moveTo(35,180+w); ctx.lineTo(255,28+w);
+    ctx.strokeStyle='rgba(0,184,144,.75)'; ctx.lineWidth=2; ctx.setLineDash([5,4]); ctx.stroke(); ctx.setLineDash([]);
+    A.forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,5,0,Math.PI*2); ctx.fillStyle='rgba(0,184,144,.85)'; ctx.fill(); });
+    B.forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,5,0,Math.PI*2); ctx.fillStyle='rgba(108,71,255,.85)'; ctx.fill(); });
+    ctx.font='11px DM Sans'; ctx.fillStyle='rgba(0,144,112,.8)'; ctx.fillText('Clase A',10,16);
+    ctx.fillStyle='rgba(108,71,255,.8)'; ctx.fillText('Clase B',215,198);
+    angle+=.01; requestAnimationFrame(draw);
+  })();
 }
 
-// === NEURAL CANVAS (Hero) ===
-const nc = document.getElementById('neural-canvas');
-const nctx = nc.getContext('2d');
-nc.width = window.innerWidth; nc.height = window.innerHeight;
-const nodes = Array.from({length: 60}, () => ({
-  x: Math.random() * nc.width, y: Math.random() * nc.height,
-  vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
-  r: Math.random() * 2.5 + 1
-}));
-function drawNeural() {
-  nctx.clearRect(0, 0, nc.width, nc.height);
-  nodes.forEach(n => {
-    n.x += n.vx; n.y += n.vy;
-    if (n.x < 0 || n.x > nc.width) n.vx *= -1;
-    if (n.y < 0 || n.y > nc.height) n.vy *= -1;
-  });
-  nodes.forEach((a, i) => {
-    nodes.slice(i + 1).forEach(b => {
-      const d = Math.hypot(a.x - b.x, a.y - b.y);
-      if (d < 130) {
-        nctx.beginPath();
-        nctx.strokeStyle = `rgba(0,245,196,${(1 - d/130) * 0.3})`;
-        nctx.lineWidth = 0.5;
-        nctx.moveTo(a.x, a.y); nctx.lineTo(b.x, b.y); nctx.stroke();
-      }
-    });
-    nctx.beginPath();
-    nctx.fillStyle = 'rgba(0,245,196,0.6)';
-    nctx.arc(a.x, a.y, a.r, 0, Math.PI * 2); nctx.fill();
-  });
-  requestAnimationFrame(drawNeural);
-}
-drawNeural();
-window.addEventListener('resize', () => { nc.width = window.innerWidth; nc.height = window.innerHeight; });
-
-// === ML CANVAS ===
-function drawML() {
-  const c = document.getElementById('mlCanvas');
-  if (!c) return;
-  const ctx = c.getContext('2d');
-  // Draw scatter plot with two classes
-  const classA = Array.from({length: 20}, () => ({ x: 60 + Math.random()*100, y: 40 + Math.random()*80 }));
-  const classB = Array.from({length: 20}, () => ({ x: 180 + Math.random()*100, y: 120 + Math.random()*80 }));
-  let angle = 0;
-  function draw() {
-    ctx.clearRect(0,0,320,240);
-    ctx.fillStyle = 'rgba(0,245,196,0.12)';
-    ctx.fillRect(0,0,320,240);
-    // grid
-    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-    ctx.lineWidth = 1;
-    for(let i=0;i<320;i+=40){ ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,240); ctx.stroke(); }
-    for(let i=0;i<240;i+=40){ ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(320,i); ctx.stroke(); }
-    // decision boundary
-    ctx.beginPath();
-    const x1 = 50, y1 = 200 + Math.sin(angle)*20;
-    const x2 = 270, y2 = 40 + Math.sin(angle+1)*20;
-    ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
-    ctx.strokeStyle = 'rgba(0,245,196,0.7)';
-    ctx.lineWidth = 2; ctx.setLineDash([6,4]); ctx.stroke(); ctx.setLineDash([]);
-    // points
-    classA.forEach(p => {
-      ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2);
-      ctx.fillStyle = 'rgba(0,245,196,0.8)'; ctx.fill();
-    });
-    classB.forEach(p => {
-      ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2);
-      ctx.fillStyle = 'rgba(123,92,255,0.8)'; ctx.fill();
-    });
-    angle += 0.01;
-    requestAnimationFrame(draw);
-  }
-  draw();
-}
-
-function drawDL() {
-  const c = document.getElementById('dlCanvas');
-  if (!c) return;
-  const ctx = c.getContext('2d');
-  const layers = [3, 5, 5, 4, 2];
-  const lx = [40, 100, 170, 240, 295];
-  const nodes = layers.map((n, li) =>
-    Array.from({length:n}, (_,ni) => ({
-      x: lx[li], y: 120 - (n-1)*22 + ni*44
-    }))
-  );
-  let t = 0;
-  function draw() {
-    ctx.clearRect(0,0,320,240);
-    // connections
-    for (let li = 0; li < layers.length-1; li++) {
-      nodes[li].forEach(a => nodes[li+1].forEach(b => {
-        const wave = Math.sin(t*0.05 + a.x*0.02 + b.y*0.02);
-        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
-        ctx.strokeStyle = `rgba(123,92,255,${0.08 + wave*0.06})`;
-        ctx.lineWidth = 0.8; ctx.stroke();
-      }));
-    }
-    // nodes
-    nodes.forEach((layer, li) => layer.forEach(n => {
-      ctx.beginPath(); ctx.arc(n.x, n.y, 7, 0, Math.PI*2);
-      const grad = ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,7);
-      const a = 0.4 + 0.3*Math.sin(t*0.08 + n.x + n.y);
-      grad.addColorStop(0, `rgba(123,92,255,${a+0.3})`);
-      grad.addColorStop(1, `rgba(123,92,255,${a*0.2})`);
-      ctx.fillStyle = grad; ctx.fill();
+// ── DL CANVAS ──
+function drawDL(){
+  const c=document.getElementById('dlCanvas'); if(!c)return;
+  const ctx=c.getContext('2d');
+  const layers=[3,5,4,3,2];
+  const lx=[28,88,155,218,268];
+  const nodes=layers.map((n,li)=>Array.from({length:n},(_,ni)=>({x:lx[li],y:105-(n-1)*22+ni*44})));
+  let t=0;
+  (function draw(){
+    ctx.clearRect(0,0,290,210);
+    for(let li=0;li<layers.length-1;li++) nodes[li].forEach(a=>nodes[li+1].forEach(b=>{
+      const w=Math.sin(t*.05+a.x*.02+b.y*.02);
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+      ctx.strokeStyle=`rgba(108,71,255,${.07+w*.05})`; ctx.lineWidth=.8; ctx.stroke();
     }));
-    t++;
-    requestAnimationFrame(draw);
-  }
-  draw();
+    nodes.forEach(layer=>layer.forEach(n=>{
+      ctx.beginPath(); ctx.arc(n.x,n.y,7,0,Math.PI*2);
+      const a=.4+.3*Math.sin(t*.08+n.x+n.y);
+      const gr=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,7);
+      gr.addColorStop(0,`rgba(108,71,255,${a+.25})`); gr.addColorStop(1,`rgba(108,71,255,${a*.08})`);
+      ctx.fillStyle=gr; ctx.fill();
+      ctx.strokeStyle='rgba(108,71,255,.25)'; ctx.lineWidth=1; ctx.stroke();
+    }));
+    ctx.font='9px JetBrains Mono'; ctx.fillStyle='rgba(0,0,0,.28)'; ctx.textAlign='center';
+    ['Input','H1','H2','H3','Out'].forEach((l,i)=>ctx.fillText(l,lx[i],202));
+    ctx.textAlign='left';
+    t++; requestAnimationFrame(draw);
+  })();
 }
 
-function drawCV() {
-  const c = document.getElementById('cvCanvas');
-  if (!c) return;
-  const ctx = c.getContext('2d');
-  let frame = 0;
-  function draw() {
-    ctx.clearRect(0,0,320,240);
-    ctx.fillStyle = 'rgba(245,196,0,0.04)'; ctx.fillRect(0,0,320,240);
-    // Fake image grid
-    const cols = 5, rows = 4, cw = 320/cols, rh = 240/rows;
-    for(let r=0;r<rows;r++) for(let c2=0;c2<cols;c2++) {
-      const x = c2*cw+4, y = r*rh+4, w = cw-8, h = rh-8;
-      const hue = (c2*60 + r*40 + frame*0.5) % 360;
-      ctx.fillStyle = `hsla(${hue},40%,30%,0.5)`;
-      ctx.fillRect(x,y,w,h);
+// ── CV CANVAS ──
+function drawCV(){
+  const c=document.getElementById('cvCanvas'); if(!c)return;
+  const ctx=c.getContext('2d');
+  let frame=0;
+  (function draw(){
+    ctx.clearRect(0,0,290,210);
+    ctx.fillStyle='rgba(212,146,10,.03)'; ctx.fillRect(0,0,290,210);
+    const cols=5,rows=4,cw=290/cols,rh=210/rows;
+    for(let r=0;r<rows;r++) for(let c2=0;c2<cols;c2++){
+      const x=c2*cw+3,y=r*rh+3,w=cw-6,h=rh-6;
+      ctx.fillStyle=`hsla(${(c2*55+r*30+frame*.25)%360},35%,72%,.65)`;
+      ctx.beginPath(); ctx.roundRect(x,y,w,h,3); ctx.fill();
     }
-    // Scanning rectangle
-    const scanX = ((frame*2) % 320);
-    ctx.strokeStyle = 'rgba(245,196,0,0.8)';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(scanX - 30, 40, 60, 60);
-    // Label
-    ctx.fillStyle = 'rgba(245,196,0,0.9)';
-    ctx.font = '11px JetBrains Mono, monospace';
-    ctx.fillText('objeto: 94.2%', scanX - 24, 115);
-    // Corner brackets
-    [[scanX-30,40],[scanX+30,40],[scanX-30,100],[scanX+30,100]].forEach(([bx,by],i) => {
-      ctx.beginPath(); ctx.strokeStyle = 'rgba(245,196,0,1)'; ctx.lineWidth = 2;
-      const dx = i%2===0 ? 8 : -8, dy = i<2 ? 8 : -8;
+    const sx=((frame*1.3)%(290-66));
+    ctx.strokeStyle='rgba(212,146,10,.9)'; ctx.lineWidth=2; ctx.strokeRect(sx,36,62,54);
+    ctx.fillStyle='rgba(212,146,10,.85)'; ctx.font='10px JetBrains Mono'; ctx.fillText('obj: 94%',sx+2,103);
+    [[sx,36],[sx+62,36],[sx,90],[sx+62,90]].forEach(([bx,by],i)=>{
+      ctx.beginPath(); ctx.strokeStyle='rgba(212,146,10,1)'; ctx.lineWidth=2.5;
+      const dx=i%2===0?8:-8,dy=i<2?8:-8;
       ctx.moveTo(bx+dx,by); ctx.lineTo(bx,by); ctx.lineTo(bx,by+dy); ctx.stroke();
     });
-    frame++;
-    requestAnimationFrame(draw);
-  }
-  draw();
+    frame++; requestAnimationFrame(draw);
+  })();
 }
 
-// === TIPOS TABS ===
-document.querySelectorAll('.tipo-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tipo-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tipo-panel').forEach(p => p.classList.remove('active'));
+// ── NLP TYPING ──
+let nlpInt;
+function startNLP(){
+  const el=document.getElementById('nlpTyped'); if(!el)return;
+  clearInterval(nlpInt);
+  const lines=['> Input: "¿Capital de Francia?"','> Tokens: ["Capital","Francia"]','> Embeddings: [0.23,-0.91,...]','> Attention → "capital", "Francia"','> Output: "París" ✓','','> Confianza: 99.8%'];
+  let li=0,ci=0; el.innerHTML='';
+  nlpInt=setInterval(()=>{
+    if(li>=lines.length){clearInterval(nlpInt);return;}
+    if(ci<lines[li].length){ el.innerHTML=lines.slice(0,li).join('<br>')+(li>0?'<br>':'')+lines[li].substring(0,ci+1)+'<span style="border-right:2px solid var(--accent3);margin-left:1px"> </span>'; ci++; }
+    else{li++;ci=0;}
+  },35);
+}
+
+// ── TIPO TABS ──
+document.querySelectorAll('.t-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.t-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tipo-panel').forEach(p=>p.classList.remove('active'));
     tab.classList.add('active');
-    const panelId = 'panel-' + tab.dataset.panel;
-    document.getElementById(panelId).classList.add('active');
-    if (tab.dataset.panel === 'ml') drawML();
-    if (tab.dataset.panel === 'dl') drawDL();
-    if (tab.dataset.panel === 'cv') drawCV();
-    if (tab.dataset.panel === 'nlp') startNLPTyping();
+    document.getElementById('panel-'+tab.dataset.panel).classList.add('active');
+    if(tab.dataset.panel==='ml') drawML();
+    if(tab.dataset.panel==='dl') drawDL();
+    if(tab.dataset.panel==='cv') drawCV();
+    if(tab.dataset.panel==='nlp') startNLP();
   });
 });
-// Init first
-setTimeout(drawML, 200);
+setTimeout(drawML,250);
 
-// === NLP TYPING ===
-let nlpTypingInterval;
-function startNLPTyping() {
-  const el = document.getElementById('nlpTyped');
-  if (!el) return;
-  clearInterval(nlpTypingInterval);
-  const lines = [
-    '> Input: "¿Cuál es la capital de Francia?"',
-    '> Tokenización: ["¿", "Cuál", "es", "la", ...]',
-    '> Embeddings: [0.23, -0.91, 0.44, ...]',
-    '> Attention: foco → "capital", "Francia"',
-    '> Output: "La capital de Francia es París."',
-    '',
-    '> Confianza: 99.8% ✓'
-  ];
-  let lineIdx = 0, charIdx = 0;
-  el.innerHTML = '';
-  nlpTypingInterval = setInterval(() => {
-    if (lineIdx >= lines.length) { clearInterval(nlpTypingInterval); return; }
-    if (charIdx < lines[lineIdx].length) {
-      el.innerHTML = lines.slice(0, lineIdx).join('<br>') + '<br>' + lines[lineIdx].substring(0, charIdx+1) + '<span style="border-right:2px solid var(--accent3);margin-left:1px">&nbsp;</span>';
-      charIdx++;
-    } else {
-      lineIdx++; charIdx = 0;
-    }
-  }, 30);
-}
-
-// === FLOW STEPS ===
-const flowSteps = document.querySelectorAll('.flow-step');
-const flowViz = document.getElementById('flowVizContent');
-const flowVisuals = [
-  { label: 'Recolección', html: `<div style="display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap">
-    ${['📷 Imágenes','📝 Texto','🎵 Audio','📊 Datos','🌐 Web'].map(s => `<div style="background:rgba(0,245,196,0.08);border:1px solid rgba(0,245,196,0.2);border-radius:6px;padding:10px 16px;font-family:var(--font-mono);font-size:12px;color:var(--accent1)">${s}</div>`).join('')}
-    </div>`, border: 'rgba(0,245,196,0.15)' },
-  { label: 'Preprocesamiento', html: `<div style="font-family:var(--font-mono);font-size:13px;color:var(--accent5);text-align:left;max-width:500px">
-    <div style="color:var(--muted);margin-bottom:8px">// Pipeline de transformación</div>
-    <div style="color:var(--accent1)">datos_raw</div>
-    <div style="padding-left:20px;color:var(--muted)">→ <span style="color:var(--text)">clean()</span> → <span style="color:var(--text)">normalize()</span></div>
-    <div style="padding-left:40px;color:var(--muted)">→ <span style="color:var(--text)">tokenize()</span> → <span style="color:var(--text)">encode()</span></div>
-    <div style="padding-left:60px;color:var(--accent2)">→ dataset listo ✓</div>
-    </div>`, border: 'rgba(0,184,255,0.15)' },
-  { label: 'Entrenamiento', html: `<div style="width:100%;max-width:400px">
-    <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-bottom:8px"><span>Epoch 1/100</span><span>Loss: 2.847</span></div>
-    <div style="height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;margin-bottom:16px"><div style="height:100%;width:1%;background:linear-gradient(90deg,var(--accent2),var(--accent1));border-radius:3px;animation:trainBar 3s ease forwards" id="trainBar"></div></div>
-    <div id="lossLog" style="font-family:var(--font-mono);font-size:11px;color:var(--muted);height:80px;overflow:hidden"></div>
-    </div>`, border: 'rgba(123,92,255,0.15)' },
-  { label: 'Evaluación', html: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:360px">
-    ${[['Precisión','94.3%','var(--accent1)'],['Recall','91.8%','var(--accent2)'],['F1-Score','93.0%','var(--accent5)'],['AUC-ROC','0.978','var(--accent4)']].map(([l,v,c]) => `<div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center"><div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:${c}">${v}</div><div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:4px">${l}</div></div>`).join('')}
-    </div>`, border: 'rgba(245,196,0,0.15)' },
-  { label: 'Despliegue', html: `<div style="font-family:var(--font-mono);font-size:12px;text-align:left;max-width:420px">
-    <div style="color:var(--accent1);margin-bottom:8px">POST /api/v1/predict</div>
-    <div style="background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:6px;padding:14px;color:var(--muted);line-height:1.8">
-    <span style="color:var(--accent5)">{</span><br>
-    &nbsp;&nbsp;<span style="color:var(--accent3)">"input"</span>: <span style="color:var(--text)">"nueva consulta"</span>,<br>
-    &nbsp;&nbsp;<span style="color:var(--accent3)">"prediction"</span>: <span style="color:var(--accent1)">"resultado"</span>,<br>
-    &nbsp;&nbsp;<span style="color:var(--accent3)">"confidence"</span>: <span style="color:var(--accent2)">0.943</span>,<br>
-    &nbsp;&nbsp;<span style="color:var(--accent3)">"latency"</span>: <span style="color:var(--accent4)">"12ms"</span><br>
-    <span style="color:var(--accent5)">}</span>
-    </div></div>`, border: 'rgba(255,79,109,0.15)' }
+// ── FLOW STEPS ──
+const fSteps=document.querySelectorAll('.f-step');
+const fViz=document.getElementById('fVizContent');
+const fVizEl=document.getElementById('flowViz');
+const fBorders=['rgba(0,184,144,.3)','rgba(0,136,212,.3)','rgba(108,71,255,.3)','rgba(212,146,10,.3)','rgba(255,61,90,.3)'];
+const fBGs=['rgba(0,184,144,.04)','rgba(0,136,212,.04)','rgba(108,71,255,.04)','rgba(212,146,10,.04)','rgba(255,61,90,.04)'];
+const fHTML=[
+  `<div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center;justify-content:center">${['📷 Imágenes','📝 Texto','🎵 Audio','📊 Datos','🌐 Web'].map(s=>`<div style="background:#fff;border:1px solid rgba(0,184,144,.3);border-radius:8px;padding:9px 14px;font-family:var(--font-mono);font-size:11px;color:var(--accent1);box-shadow:0 2px 6px rgba(0,0,0,.06)">${s}</div>`).join('')}</div>`,
+  `<div style="font-family:var(--font-mono);font-size:12px;text-align:left;max-width:420px"><div style="color:var(--text-soft);margin-bottom:6px">// Pipeline de transformación</div><div style="color:var(--accent1)">datos_raw</div><div style="padding-left:16px;color:var(--text-soft)">→ <span style="color:var(--text-dark)">clean()</span> → <span style="color:var(--text-dark)">normalize()</span></div><div style="padding-left:32px;color:var(--text-soft)">→ <span style="color:var(--text-dark)">tokenize()</span> → <span style="color:var(--text-dark)">encode()</span></div><div style="padding-left:48px;color:var(--accent2)">→ dataset listo ✓</div></div>`,
+  `<div style="width:100%;max-width:360px"><div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px;color:var(--text-soft);margin-bottom:7px"><span>Entrenando…</span><span id="epLbl">Ep 0/100</span></div><div style="height:5px;background:rgba(0,0,0,.08);border-radius:3px;overflow:hidden;margin-bottom:12px"><div id="tBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent2),var(--accent1));border-radius:3px;transition:width .15s"></div></div><div id="lossLog" style="font-family:var(--font-mono);font-size:11px;color:var(--text-soft);height:68px;overflow:hidden"></div></div>`,
+  `<div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;max-width:320px">${[['Precisión','94.3%','var(--accent1)'],['Recall','91.8%','var(--accent2)'],['F1-Score','93.0%','var(--accent5)'],['AUC-ROC','0.978','var(--accent4)']].map(([l,v,c])=>`<div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:13px;text-align:center;box-shadow:0 2px 7px rgba(0,0,0,.06)"><div style="font-family:var(--font-display);font-size:19px;font-weight:700;color:${c}">${v}</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--text-soft);margin-top:3px">${l}</div></div>`).join('')}</div>`,
+  `<div style="font-family:var(--font-mono);font-size:12px;text-align:left;max-width:360px"><div style="color:var(--accent1);margin-bottom:7px">POST /api/v1/predict</div><div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:13px;color:var(--text-soft);line-height:1.9;box-shadow:0 2px 7px rgba(0,0,0,.06)"><span style="color:var(--accent5)">{</span><br>&nbsp;&nbsp;<span style="color:var(--accent3)">"input"</span>: <span style="color:var(--text-dark)">"nueva consulta"</span>,<br>&nbsp;&nbsp;<span style="color:var(--accent3)">"prediction"</span>: <span style="color:var(--accent1)">"resultado"</span>,<br>&nbsp;&nbsp;<span style="color:var(--accent3)">"confidence"</span>: <span style="color:var(--accent2)">0.943</span>,<br>&nbsp;&nbsp;<span style="color:var(--accent3)">"latency"</span>: <span style="color:var(--accent4)">"12ms"</span><br><span style="color:var(--accent5)">}</span></div></div>`
 ];
-
-flowSteps.forEach((step, i) => {
-  step.addEventListener('click', () => {
-    flowSteps.forEach(s => s.classList.remove('active'));
-    step.classList.add('active');
-    const v = flowVisuals[i];
-    const fa = document.getElementById('flowVisual');
-    fa.style.borderColor = v.border;
-    flowViz.innerHTML = v.html;
-    if (i === 2) {
-      // Animate train bar and loss log
-      const bar = document.getElementById('trainBar');
-      const log = document.getElementById('lossLog');
-      if (bar) {
-        let pct = 1, ep = 1, loss = 2.847;
-        const trainInt = setInterval(() => {
-          pct += 1.5; ep = Math.round(pct); loss = Math.max(0.12, loss * 0.95);
-          if (bar) bar.style.width = Math.min(100,pct) + '%';
-          if (log) log.innerHTML = (log.innerHTML || '') + `<div style="color:var(--accent1)">Ep ${ep}: loss=${loss.toFixed(3)}</div>`;
-          if (log) log.scrollTop = log.scrollHeight;
-          if (pct >= 100) clearInterval(trainInt);
-        }, 120);
-      }
+fSteps.forEach((step,i)=>{
+  step.addEventListener('click',()=>{
+    fSteps.forEach(s=>s.classList.remove('active')); step.classList.add('active');
+    fVizEl.style.borderColor=fBorders[i]; fVizEl.style.background=fBGs[i];
+    fViz.innerHTML=fHTML[i];
+    if(i===2){
+      let pct=0,ep=0,loss=2.847;
+      const bar=document.getElementById('tBar'),log=document.getElementById('lossLog'),lbl=document.getElementById('epLbl');
+      const ti=setInterval(()=>{
+        pct+=1.5; ep=Math.round(pct); loss=Math.max(.12,loss*.95);
+        if(bar) bar.style.width=Math.min(100,pct)+'%';
+        if(lbl) lbl.textContent=`Ep ${ep}/100`;
+        if(log){log.innerHTML+=`<div style="color:var(--accent2)">Ep ${ep}: loss=${loss.toFixed(3)}</div>`; log.scrollTop=log.scrollHeight;}
+        if(pct>=100) clearInterval(ti);
+      },100);
     }
   });
 });
-// Init first step
-flowViz.innerHTML = flowVisuals[0].html;
+fViz.innerHTML=fHTML[0];
 
-// === RADAR CHART ===
-function drawRadar() {
-  const c = document.getElementById('radarChart');
-  if (!c) return;
-  const ctx = c.getContext('2d');
-  const cx = 160, cy = 160, r = 130;
-  const labels = ['Transparencia','Equidad','Privacidad','Regulación','Accesibilidad','Seguridad'];
-  const values = [0.45, 0.38, 0.52, 0.30, 0.60, 0.41];
-  const colors = ['var(--accent1)','var(--accent2)','var(--accent3)','var(--accent4)','var(--accent5)','#ff9f43'];
-  const n = labels.length;
-  let anim = 0;
-  function draw() {
-    ctx.clearRect(0,0,320,320);
-    const t = Math.min(anim / 60, 1);
-    const ease = 1 - Math.pow(1-t, 3);
-    // Web
-    for (let ring = 1; ring <= 5; ring++) {
+// ── RADAR ──
+function drawRadar(){
+  const c=document.getElementById('rdrCanvas'); if(!c)return;
+  const ctx=c.getContext('2d');
+  const sz=Math.min(c.width,c.height),cx=sz/2,cy=sz/2,r=sz*.41;
+  const labels=['Transparencia','Equidad','Privacidad','Regulación','Accesibilidad','Seguridad'];
+  const vals=[.45,.38,.52,.30,.60,.41];
+  const cols=['#00b890','#6c47ff','#ff3d5a','#d4920a','#0088d4','#c06000'];
+  const n=labels.length;
+  let anim=0;
+  (function draw(){
+    ctx.clearRect(0,0,sz,sz);
+    const t=Math.min(anim/60,1), ease=1-Math.pow(1-t,3);
+    // rings
+    for(let ring=1;ring<=5;ring++){
       ctx.beginPath();
-      for (let i = 0; i < n; i++) {
-        const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
-        const x = cx + (r * ring/5) * Math.cos(angle);
-        const y = cy + (r * ring/5) * Math.sin(angle);
-        i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
-      }
-      ctx.closePath();
-      ctx.strokeStyle = 'rgba(255,255,255,0.07)';
-      ctx.lineWidth = 1; ctx.stroke();
+      for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2-Math.PI/2;const x=cx+(r*ring/5)*Math.cos(a),y=cy+(r*ring/5)*Math.sin(a);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+      ctx.closePath(); ctx.strokeStyle='rgba(0,0,0,.08)'; ctx.lineWidth=1; ctx.stroke();
     }
-    // Axes
-    for (let i = 0; i < n; i++) {
-      const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
-      ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1; ctx.stroke();
-    }
-    // Data
+    // axes
+    for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2-Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));ctx.strokeStyle='rgba(0,0,0,.09)';ctx.lineWidth=1;ctx.stroke();}
+    // data
     ctx.beginPath();
-    for (let i = 0; i < n; i++) {
-      const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
-      const rv = r * values[i] * ease;
-      const x = cx + rv * Math.cos(angle), y = cy + rv * Math.sin(angle);
-      i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
-    }
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(0,245,196,0.12)'; ctx.fill();
-    ctx.strokeStyle = 'rgba(0,245,196,0.6)'; ctx.lineWidth = 2; ctx.stroke();
-    // Points
-    for (let i = 0; i < n; i++) {
-      const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
-      const rv = r * values[i] * ease;
-      const x = cx + rv * Math.cos(angle), y = cy + rv * Math.sin(angle);
-      ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2);
-      ctx.fillStyle = colors[i]; ctx.fill();
-    }
-    // Labels
-    ctx.font = '11px "DM Sans", sans-serif';
-    for (let i = 0; i < n; i++) {
-      const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
-      const lx = cx + (r+20) * Math.cos(angle), ly = cy + (r+20) * Math.sin(angle);
-      ctx.fillStyle = 'rgba(255,255,255,0.5)';
-      ctx.textAlign = Math.abs(lx-cx) < 5 ? 'center' : lx > cx ? 'left' : 'right';
-      ctx.textBaseline = Math.abs(ly-cy) < 5 ? 'middle' : ly > cy ? 'top' : 'bottom';
-      ctx.fillText(labels[i], lx, ly);
-    }
-    if (t < 1) { anim++; requestAnimationFrame(draw); }
-  }
-  draw();
+    for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2-Math.PI/2,rv=r*vals[i]*ease;const x=cx+rv*Math.cos(a),y=cy+rv*Math.sin(a);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+    ctx.closePath(); ctx.fillStyle='rgba(108,71,255,.1)'; ctx.fill();
+    ctx.strokeStyle='rgba(108,71,255,.55)'; ctx.lineWidth=2; ctx.stroke();
+    // dots
+    for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2-Math.PI/2,rv=r*vals[i]*ease;const x=cx+rv*Math.cos(a),y=cy+rv*Math.sin(a);ctx.beginPath();ctx.arc(x,y,4.5,0,Math.PI*2);ctx.fillStyle=cols[i];ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();}
+    // labels
+    const fs=Math.max(9,sz*.037); ctx.font=`${fs}px DM Sans,sans-serif`;
+    for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2-Math.PI/2;const lx=cx+(r+18)*Math.cos(a),ly=cy+(r+18)*Math.sin(a);ctx.fillStyle='rgba(0,0,0,.45)';ctx.textAlign=Math.abs(lx-cx)<5?'center':lx>cx?'left':'right';ctx.textBaseline=Math.abs(ly-cy)<5?'middle':ly>cy?'top':'bottom';ctx.fillText(labels[i],lx,ly);}
+    if(t<1){anim++;requestAnimationFrame(draw);}
+  })();
 }
+new IntersectionObserver(e=>{if(e[0].isIntersecting){drawRadar();animRBars();}},{threshold:.15}).observe(document.getElementById('etica'));
 
-// Observe etica section
-const eticaObs = new IntersectionObserver(entries => {
-  if (entries[0].isIntersecting) {
-    drawRadar();
-    animateBars();
-    eticaObs.disconnect();
-  }
-}, { threshold: 0.2 });
-const eticaSection = document.getElementById('etica');
-if (eticaSection) eticaObs.observe(eticaSection);
-
-// Observe aplicaciones
-const appObs = new IntersectionObserver(entries => {
-  if (entries[0].isIntersecting) {
-    animateStatBars();
-    appObs.disconnect();
-  }
-}, { threshold: 0.2 });
-const appSection = document.getElementById('aplicaciones');
-if (appSection) appObs.observe(appSection);
-
-// === STYLE for trainBar ===
-const style = document.createElement('style');
-style.textContent = `@keyframes trainBar { from { width: 0% } to { width: 100% } }`;
-document.head.appendChild(style);
-
-// === NAV ACTIVE LINKS ===
-const sections = ['hero','que-es','tipos','aplicaciones','como-funciona','etica'];
-const navLinks = document.querySelectorAll('.nav-links a');
-window.addEventListener('scroll', () => {
-  const y = window.scrollY + 200;
-  sections.forEach((id, i) => {
-    const s = document.getElementById(id);
-    if (s && y >= s.offsetTop && (i === sections.length-1 || y < document.getElementById(sections[i+1])?.offsetTop)) {
-      navLinks.forEach(l => l.classList.remove('active'));
-      navLinks[i-1]?.classList.add('active');
-    }
+// ── NAV ACTIVE ──
+const sIds=['hero','que-es','tipos','aplicaciones','como-funciona','etica'];
+const nLinks=document.querySelectorAll('#navLinks a');
+window.addEventListener('scroll',()=>{
+  const y=window.scrollY+200;
+  sIds.forEach((id,i)=>{
+    const s=document.getElementById(id),nxt=document.getElementById(sIds[i+1]);
+    if(s&&y>=s.offsetTop&&(!nxt||y<nxt.offsetTop)){nLinks.forEach(l=>l.classList.remove('active'));if(i>0)nLinks[i-1]?.classList.add('active');}
   });
 });
 
-// === PARTICLES ===
-function createParticles() {
-  const hero = document.getElementById('hero');
-  for (let i = 0; i < 12; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    const size = Math.random() * 3 + 1;
-    const colors = ['var(--accent1)','var(--accent2)','var(--accent3)'];
-    p.style.cssText = `
-      width:${size}px;height:${size}px;
-      background:${colors[Math.floor(Math.random()*colors.length)]};
-      left:${Math.random()*100}%;
-      bottom:${-10}px;
-      animation-duration:${8 + Math.random()*12}s;
-      animation-delay:${Math.random()*8}s;
-      opacity:0.4;
-    `;
-    hero.appendChild(p);
-  }
+// ── PARTICLES ──
+const hero=document.getElementById('hero');
+for(let i=0;i<10;i++){
+  const p=document.createElement('div'); p.className='particle';
+  const sz=Math.random()*3+1;
+  const pCols=['rgba(108,71,255,.3)','rgba(0,184,144,.3)','rgba(255,61,90,.25)'];
+  p.style.cssText=`width:${sz}px;height:${sz}px;background:${pCols[i%3]};left:${Math.random()*100}%;bottom:-8px;animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*9}s;`;
+  hero.appendChild(p);
 }
-createParticles();
 </script>
 </body>
 </html>
